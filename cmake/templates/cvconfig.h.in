@@ -44,7 +44,7 @@
 #cmakedefine HAVE_CUBLAS
 
 /* NVIDIA CUDA Runtime API*/
-#cmakedefine HAVE_CUDA
+#cmakedefine HAVE_HIP
 
 /* NVIDIA CUDA Fast Fourier Transform (FFT) API*/
 #cmakedefine HAVE_CUFFT

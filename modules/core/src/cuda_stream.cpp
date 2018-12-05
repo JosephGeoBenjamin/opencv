@@ -52,7 +52,7 @@ using namespace cv::cuda;
 /////////////////////////////////////////////////////////////
 /// MemoryStack
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 namespace
 {
@@ -113,7 +113,7 @@ namespace
 /////////////////////////////////////////////////////////////
 /// MemoryPool
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 namespace
 {
@@ -264,7 +264,7 @@ namespace
 ////////////////////////////////////////////////////////////////
 /// Stream::Impl
 
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
 
 class cv::cuda::Stream::Impl
 {
@@ -332,7 +332,7 @@ cv::cuda::Stream::Impl::~Impl()
 /////////////////////////////////////////////////////////////
 /// DefaultDeviceInitializer
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 namespace cv { namespace cuda
 {
@@ -433,7 +433,7 @@ namespace cv { namespace cuda
 
 cv::cuda::Stream::Stream()
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     impl_ = makePtr<Impl>();
@@ -442,7 +442,7 @@ cv::cuda::Stream::Stream()
 
 cv::cuda::Stream::Stream(const Ptr<GpuMat::Allocator>& allocator)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(allocator);
     throw_no_cuda();
 #else
@@ -452,7 +452,7 @@ cv::cuda::Stream::Stream(const Ptr<GpuMat::Allocator>& allocator)
 
 bool cv::cuda::Stream::queryIfComplete() const
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     cudaError_t err = cudaStreamQuery(impl_->stream);
@@ -467,7 +467,7 @@ bool cv::cuda::Stream::queryIfComplete() const
 
 void cv::cuda::Stream::waitForCompletion()
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     cudaSafeCall( cudaStreamSynchronize(impl_->stream) );
@@ -476,7 +476,7 @@ void cv::cuda::Stream::waitForCompletion()
 
 void cv::cuda::Stream::waitEvent(const Event& event)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(event);
     throw_no_cuda();
 #else
@@ -484,7 +484,7 @@ void cv::cuda::Stream::waitEvent(const Event& event)
 #endif
 }
 
-#if defined(HAVE_CUDA) && (CUDART_VERSION >= 5000)
+#if defined(HAVE_HIP) && (CUDART_VERSION >= 5000)
 
 namespace
 {
@@ -508,7 +508,7 @@ namespace
 
 void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userData)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(callback);
     CV_UNUSED(userData);
     throw_no_cuda();
@@ -527,7 +527,7 @@ void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userDa
 
 Stream& cv::cuda::Stream::Null()
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     const int deviceId = getDevice();
@@ -537,14 +537,14 @@ Stream& cv::cuda::Stream::Null()
 
 cv::cuda::Stream::operator bool_type() const
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     return 0;
 #else
     return (impl_->stream != 0) ? &Stream::this_type_does_not_support_comparisons : 0;
 #endif
 }
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 cudaStream_t cv::cuda::StreamAccessor::getStream(const Stream& stream)
 {
@@ -561,7 +561,7 @@ Stream cv::cuda::StreamAccessor::wrapStream(cudaStream_t stream)
 /////////////////////////////////////////////////////////////
 /// StackAllocator
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 namespace
 {
@@ -661,7 +661,7 @@ namespace
 
 void cv::cuda::setBufferPoolUsage(bool on)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(on);
     throw_no_cuda();
 #else
@@ -671,7 +671,7 @@ void cv::cuda::setBufferPoolUsage(bool on)
 
 void cv::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCount)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(deviceId);
     CV_UNUSED(stackSize);
     CV_UNUSED(stackCount);
@@ -699,7 +699,7 @@ void cv::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCoun
 #endif
 }
 
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
 cv::cuda::BufferPool::BufferPool(Stream& stream)
 {
     CV_UNUSED(stream);
@@ -713,7 +713,7 @@ cv::cuda::BufferPool::BufferPool(Stream& stream) : allocator_(stream.impl_->allo
 
 GpuMat cv::cuda::BufferPool::getBuffer(int rows, int cols, int type)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(rows);
     CV_UNUSED(cols);
     CV_UNUSED(type);
@@ -729,7 +729,7 @@ GpuMat cv::cuda::BufferPool::getBuffer(int rows, int cols, int type)
 ////////////////////////////////////////////////////////////////
 // Event
 
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
 
 class cv::cuda::Event::Impl
 {
@@ -785,7 +785,7 @@ Event cv::cuda::EventAccessor::wrapEvent(cudaEvent_t event)
 
 cv::cuda::Event::Event(CreateFlags flags)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(flags);
     throw_no_cuda();
 #else
@@ -795,7 +795,7 @@ cv::cuda::Event::Event(CreateFlags flags)
 
 void cv::cuda::Event::record(Stream& stream)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(stream);
     throw_no_cuda();
 #else
@@ -805,7 +805,7 @@ void cv::cuda::Event::record(Stream& stream)
 
 bool cv::cuda::Event::queryIfComplete() const
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     cudaError_t err = cudaEventQuery(impl_->event);
@@ -820,7 +820,7 @@ bool cv::cuda::Event::queryIfComplete() const
 
 void cv::cuda::Event::waitForCompletion()
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     throw_no_cuda();
 #else
     cudaSafeCall( cudaEventSynchronize(impl_->event) );
@@ -829,7 +829,7 @@ void cv::cuda::Event::waitForCompletion()
 
 float cv::cuda::Event::elapsedTime(const Event& start, const Event& end)
 {
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
     CV_UNUSED(start);
     CV_UNUSED(end);
     throw_no_cuda();

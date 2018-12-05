@@ -47,7 +47,7 @@
 
 #include "opencv2/opencv_modules.hpp"
 
-#if defined (HAVE_CUDA) && defined(HAVE_OPENCV_CUDAARITHM) && defined(HAVE_OPENCV_CUDAIMGPROC)
+#if defined (HAVE_HIP) && defined(HAVE_OPENCV_CUDAARITHM) && defined(HAVE_OPENCV_CUDAIMGPROC)
 
 namespace opencv_test { namespace {
 using namespace perf;

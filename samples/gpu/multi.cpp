@@ -10,11 +10,11 @@
 #include "opencv2/core.hpp"
 #include "opencv2/cudaarithm.hpp"
 
-#if !defined(HAVE_CUDA)
+#if !defined(HAVE_HIP)
 
 int main()
 {
-    std::cout << "CUDA support is required (OpenCV CMake parameter 'WITH_CUDA' must be true)." << std::endl;
+    std::cout << "CUDA support is required (OpenCV CMake parameter 'WITH_HIP' must be true)." << std::endl;
     return 0;
 }
 

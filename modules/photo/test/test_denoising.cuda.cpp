@@ -48,7 +48,7 @@
 #include "opencv2/opencv_modules.hpp"
 #include "cvconfig.h"
 
-#if defined (HAVE_CUDA) && defined(HAVE_OPENCV_CUDAARITHM) && defined(HAVE_OPENCV_CUDAIMGPROC)
+#if defined (HAVE_HIP) && defined(HAVE_OPENCV_CUDAARITHM) && defined(HAVE_OPENCV_CUDAIMGPROC)
 
 namespace opencv_test { namespace {
 
@@ -117,4 +117,4 @@ TEST(CUDA_FastNonLocalMeans, Regression)
 }
 
 }} // namespace
-#endif // HAVE_CUDA
+#endif // HAVE_HIP

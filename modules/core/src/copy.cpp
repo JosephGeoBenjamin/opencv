@@ -240,7 +240,7 @@ void Mat::copyTo( OutputArray _dst ) const
 {
     CV_INSTRUMENT_REGION();
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
     if (_dst.isGpuMat())
     {
         _dst.getGpuMat().upload(*this);

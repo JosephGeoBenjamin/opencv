@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include "opencl_kernels_stitching.hpp"
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
     namespace cv { namespace cuda { namespace device
     {
         namespace blend

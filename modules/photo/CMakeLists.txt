@@ -1,6 +1,6 @@
 set(the_description "Computational Photography")
 
-if(HAVE_CUDA)
+if(HAVE_HIP)
   ocv_warnings_disable(CMAKE_CXX_FLAGS -Wundef -Wmissing-declarations -Wshadow)
 endif()
 

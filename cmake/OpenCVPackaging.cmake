@@ -87,7 +87,7 @@ set(CPACK_COMPONENT_JAVA_DEPENDS libs)
 set(CPACK_COMPONENT_PYTHON_DEPENDS libs)
 set(CPACK_COMPONENT_TESTS_DEPENDS libs)
 
-if(HAVE_CUDA)
+if(HAVE_HIP)
   string(REPLACE "." "-" cuda_version_suffix ${HIP_VERSION})
   if(HIP_VERSION VERSION_LESS "6.5")
     set(CPACK_DEB_libs_PACKAGE_DEPENDS "cuda-core-libs-${cuda_version_suffix}, cuda-extra-libs-${cuda_version_suffix}")

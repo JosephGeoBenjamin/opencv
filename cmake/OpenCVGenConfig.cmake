@@ -11,7 +11,7 @@ else()
   set(OpenCV_USE_MANGLED_PATHS_CONFIGCMAKE FALSE)
 endif()
 
-if(HAVE_CUDA)
+if(HAVE_HIP)
   ocv_cmake_configure("${CMAKE_CURRENT_LIST_DIR}/templates/OpenCVConfig-CUDA.cmake.in" CUDA_CONFIGCMAKE @ONLY)
 endif()
 

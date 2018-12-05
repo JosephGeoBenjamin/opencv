@@ -58,7 +58,7 @@
 using namespace cv;
 using namespace cv::cuda;
 
-#if !defined (HAVE_CUDA) || !defined(HAVE_OPENCV_CUDAARITHM) || !defined(HAVE_OPENCV_CUDAIMGPROC)
+#if !defined (HAVE_HIP) || !defined(HAVE_OPENCV_CUDAARITHM) || !defined(HAVE_OPENCV_CUDAIMGPROC)
 
 void cv::cuda::nonLocalMeans(InputArray, OutputArray, float, int, int, int, Stream&) { throw_no_cuda(); }
 void cv::cuda::fastNlMeansDenoising(InputArray, OutputArray, float, int, int, Stream&) { throw_no_cuda(); }

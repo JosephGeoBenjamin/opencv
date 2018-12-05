@@ -45,7 +45,7 @@ ocv_list_filterout(opencv_hdrs "modules/.*\\\\.private\\\\.h*")
 ocv_list_filterout(opencv_hdrs "modules/.*/private\\\\.h*")
 ocv_list_filterout(opencv_hdrs "modules/.*/legacy/.*")
 ocv_list_filterout(opencv_hdrs "modules/.*/detection_based_tracker\\\\.hpp") # Conditional compilation
-if(NOT HAVE_CUDA)
+if(NOT HAVE_HIP)
   ocv_list_filterout(opencv_hdrs "modules/cuda.*")
   ocv_list_filterout(opencv_hdrs "modules/cudev")
 endif()

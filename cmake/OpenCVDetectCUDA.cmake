@@ -27,7 +27,7 @@ else()
 endif()
 
 if(HIP_FOUND)
-  set(HAVE_CUDA 1) # MCW-TODO: Replace with HAVE_HIP across all files 
+  set(HAVE_HIP 1) # MCW-TODO: Replace with HAVE_HIP across all files 
   set(HAVE_HIP 1) 
 
   if(WITH_CUFFT)
@@ -286,7 +286,7 @@ else()
   unset(CUDA_ARCH_PTX CACHE)
 endif()
 
-if(HAVE_CUDA)
+if(HAVE_HIP)
   set(CUDA_LIBS_PATH "")
   foreach(p ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
     get_filename_component(_tmp ${p} PATH)

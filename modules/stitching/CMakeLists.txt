@@ -1,6 +1,6 @@
 set(the_description "Images stitching")
 
-if(HAVE_CUDA)
+if(HAVE_HIP)
   ocv_warnings_disable(CMAKE_CXX_FLAGS -Wundef -Wmissing-declarations -Wshadow)
 endif()
 

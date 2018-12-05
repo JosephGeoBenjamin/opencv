@@ -2,7 +2,7 @@
 #include "opencv2/ts/cuda_perf.hpp"
 
 static const char * impls[] = {
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
     "cuda",
 #endif
     "plain"

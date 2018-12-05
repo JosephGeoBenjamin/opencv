@@ -222,7 +222,7 @@ Supported platform: Drive PX 2
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -272,7 +272,7 @@ Configuration is slightly different for the Jetson TK1 and the Jetson TX1 system
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -309,7 +309,7 @@ __Note:__ This uses CUDA 6.5, not 8.0.
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -353,7 +353,7 @@ The configuration options given to `cmake` below are targeted towards the functi
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -485,7 +485,7 @@ For DRIVE PX 2:
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -522,7 +522,7 @@ For Jetson TK1:
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -557,7 +557,7 @@ For Jetson TX1:
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -593,7 +593,7 @@ For both 14.04 LTS and 16.04 LTS:
         -DWITH_FFMPEG=ON \
         -DWITH_GSTREAMER=OFF \
         -DWITH_GSTREAMER_0_10=OFF \
-        -DWITH_CUDA=ON \
+        -DWITH_HIP=ON \
         -DWITH_GTK=ON \
         -DWITH_VTK=OFF \
         -DWITH_TBB=ON \
@@ -642,7 +642,7 @@ The following is a table of all the parameters passed to CMake in the recommende
 |INSTALL_TESTS|ON|Enables the installation of the tests as part of `make install`| |
 |OPENCV_TEST_DATA_PATH|../opencv_extra/testdata|Path to the `testdata` directory in the `opencv_extra` repository| |
 |WITH_1394|OFF|Specifies whether to include IEEE-1394 support| |
-|WITH_CUDA|ON|Specifies whether to include CUDA support| |
+|WITH_HIP|ON|Specifies whether to include CUDA support| |
 |WITH_FFMPEG|ON|Specifies whether to include FFMPEG support| |
 |WITH_GSTREAMER|OFF|Specifies whether to include GStreamer 1.0 support| |
 |WITH_GSTREAMER_0_10|OFF|Specifies whether to include GStreamer 0.10 support| |

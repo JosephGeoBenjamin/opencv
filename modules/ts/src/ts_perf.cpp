@@ -11,7 +11,7 @@
 #include <windows.h>
 #endif
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 #include "opencv2/core/cuda.hpp"
 #endif
 
@@ -52,7 +52,7 @@ namespace cvtest {
 extern bool         test_ipp_check;
 }
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 static int          param_cuda_device;
 #endif
 
@@ -994,7 +994,7 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
         "{   perf_instrument             |0        |instrument code to collect implementations trace: 1 - perform instrumentation; 2 - separate functions with the same name }"
 #endif
         "{   help h                      |false    |print help info}"
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
         "{   perf_cuda_device            |0        |run CUDA test suite onto specific CUDA capable device}"
         "{   perf_cuda_info_only         |false    |print an information about system and an available CUDA devices and then exit.}"
 #endif
@@ -1089,7 +1089,7 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
         cv::instr::setUseInstrumentation(false);
 #endif
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
     bool printOnly        = args.get<bool>("perf_cuda_info_only");
 
@@ -1102,7 +1102,7 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
     if (available_impls.size() > 1)
         printf("[----------]\n[   INFO   ] \tImplementation variant: %s.\n[----------]\n", param_impl.c_str()), fflush(stdout);
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
     param_cuda_device      = std::max(0, std::min(cv::cuda::getCudaEnabledDeviceCount(), args.get<int>("perf_cuda_device")));
 
@@ -1161,7 +1161,7 @@ void TestBase::RecordRunParameters()
     ::testing::Test::RecordProperty("cv_implementation", param_impl);
     ::testing::Test::RecordProperty("cv_num_threads", testThreads);
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
     if (param_impl == "cuda")
     {
         cv::cuda::DeviceInfo info(param_cuda_device);
@@ -2005,7 +2005,7 @@ void TestBase::RunPerfTestBody()
     catch(const cv::Exception& e)
     {
         metrics.terminationReason = performance_metrics::TERM_EXCEPTION;
-        #ifdef HAVE_CUDA
+        #ifdef HAVE_HIP
             if (e.code == cv::Error::GpuApiCallError)
                 cv::cuda::resetDevice();
         #endif

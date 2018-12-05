@@ -347,14 +347,14 @@ namespace cv { namespace cuda
     void PrintTo(const DeviceInfo& info, std::ostream* os);
 }}
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 
 #define CV_TEST_INIT0_CUDA cvtest::parseCudaDeviceOptions(argc, argv), cvtest::printCudaInfo(), cv::setUseOptimized(false)
 
 #define CV_CUDA_TEST_MAIN(resourcesubdir, ...) \
     CV_TEST_MAIN_EX(resourcesubdir, CUDA, __VA_ARGS__)
 
-#else // HAVE_CUDA
+#else // HAVE_HIP
 
 #define CV_CUDA_TEST_MAIN(resourcesubdir) \
     int main() \
@@ -363,7 +363,7 @@ namespace cv { namespace cuda
         return 0; \
     }
 
-#endif // HAVE_CUDA
+#endif // HAVE_HIP
 
 
 #endif // OPENCV_CUDA_TEST_UTILITY_HPP

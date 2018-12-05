@@ -224,7 +224,7 @@ OCV_OPTION(WITH_AVFOUNDATION   "Use AVFoundation for Video I/O (iOS/Mac)"    ON 
 OCV_OPTION(WITH_CAROTENE       "Use NVidia carotene acceleration library for ARM platform"                   ON  IF (ARM OR AARCH64) AND NOT IOS AND NOT (CMAKE_VERSION VERSION_LESS "2.8.11"))
 OCV_OPTION(WITH_CPUFEATURES    "Use cpufeatures Android library"             ON   IF ANDROID)
 OCV_OPTION(WITH_VTK            "Include VTK library support (and build opencv_viz module eiher)"             ON  IF (NOT ANDROID AND NOT IOS AND NOT WINRT AND NOT CMAKE_CROSSCOMPILING) )
-OCV_OPTION(WITH_CUDA           "Include NVidia Cuda Runtime support"                                         OFF IF (NOT IOS AND NOT WINRT) )
+OCV_OPTION(WITH_HIP           "Include NVidia Cuda Runtime support"                                         OFF IF (NOT IOS AND NOT WINRT) )
 OCV_OPTION(WITH_CUFFT          "Include NVidia Cuda Fast Fourier Transform (FFT) library support"            ON  IF (NOT IOS AND NOT WINRT) )
 OCV_OPTION(WITH_CUBLAS         "Include NVidia Cuda Basic Linear Algebra Subprograms (BLAS) library support" ON IF (NOT IOS AND NOT WINRT) )
 OCV_OPTION(WITH_NVCUVID        "Include NVidia Video Decoding library support"                               ON IF (NOT IOS AND NOT APPLE) )
@@ -776,7 +776,7 @@ unset(_hal_includes)
 # ----------------------------------------------------------------------------
 # Add CUDA libraries (needed for apps/tools, samples)
 # ----------------------------------------------------------------------------
-if(HAVE_CUDA)
+if(HAVE_HIP)
   set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
   if(HAVE_CUBLAS)
     set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_cublas_LIBRARY})
@@ -1430,7 +1430,7 @@ foreach(s ${CUSTOM_STATUS})
   status(${CUSTOM_STATUS_${s}})
 endforeach()
 
-if(WITH_CUDA OR HAVE_CUDA)
+if(WITH_HIP OR HAVE_HIP)
   ocv_build_features_string(cuda_features
     IF HAVE_CUFFT THEN "CUFFT"
     IF HAVE_CUBLAS THEN "CUBLAS"
@@ -1438,8 +1438,8 @@ if(WITH_CUDA OR HAVE_CUDA)
     IF CUDA_FAST_MATH THEN "FAST_MATH"
     ELSE "no extra features")
   status("")
-  status("  NVIDIA CUDA:" HAVE_CUDA THEN "YES (ver ${CUDA_VERSION_STRING}, ${cuda_features})" ELSE NO)
-  if(HAVE_CUDA)
+  status("  NVIDIA CUDA:" HAVE_HIP THEN "YES (ver ${CUDA_VERSION_STRING}, ${cuda_features})" ELSE NO)
+  if(HAVE_HIP)
     status("    NVIDIA GPU arch:"      ${OPENCV_CUDA_ARCH_BIN})
     status("    NVIDIA PTX archs:"     ${OPENCV_CUDA_ARCH_PTX})
   endif()

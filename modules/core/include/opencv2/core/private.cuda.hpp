@@ -55,7 +55,7 @@
 
 #include "opencv2/core/cuda.hpp"
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
 #  include <cuda.h>
 #  include <cuda_runtime.h>
 #  if defined(__CUDACC_VER_MAJOR__) && (8 <= __CUDACC_VER_MAJOR__)
@@ -102,11 +102,11 @@ namespace cv { namespace cuda {
     CV_EXPORTS void syncOutput(const GpuMat& dst, OutputArray _dst, Stream& stream);
 }}
 
-#ifndef HAVE_CUDA
+#ifndef HAVE_HIP
 
 static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::GpuNotSupported, "The library is compiled without CUDA support"); }
 
-#else // HAVE_CUDA
+#else // HAVE_HIP
 
 #define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { cudaStreamSynchronize(oldStream); nppSetStream(newStream); } }
 
@@ -163,7 +163,7 @@ namespace cv { namespace cuda
 #define nppSafeCall(expr)  cv::cuda::checkNppError(expr, __FILE__, __LINE__, CV_Func)
 #define cuSafeCall(expr)  cv::cuda::checkCudaDriverApiError(expr, __FILE__, __LINE__, CV_Func)
 
-#endif // HAVE_CUDA
+#endif // HAVE_HIP
 
 //! @endcond
 

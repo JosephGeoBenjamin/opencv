@@ -105,7 +105,7 @@ namespace perf
 
     void sortKeyPoints(std::vector<cv::KeyPoint>& keypoints, cv::InputOutputArray _descriptors = cv::noArray());
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_HIP
     #define CV_PERF_TEST_CUDA_MAIN(modulename) \
         int main(int argc, char **argv)\
         {\

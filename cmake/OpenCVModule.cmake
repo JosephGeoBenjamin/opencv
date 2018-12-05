@@ -796,7 +796,7 @@ macro(ocv_glob_module_sources)
 
   set(lib_cuda_srcs "")
   set(lib_cuda_hdrs "")
-  if(HAVE_CUDA AND exclude_cuda EQUAL -1)
+  if(HAVE_HIP AND exclude_cuda EQUAL -1)
     file(GLOB lib_cuda_srcs
          "${CMAKE_CURRENT_LIST_DIR}/src/cuda/*.cu"
     )
@@ -934,7 +934,7 @@ macro(_ocv_create_module)
   ocv_target_link_libraries(${the_module} LINK_PUBLIC ${OPENCV_MODULE_${the_module}_DEPS_TO_LINK})
   ocv_target_link_libraries(${the_module} LINK_PUBLIC ${OPENCV_MODULE_${the_module}_DEPS_EXT})
   ocv_target_link_libraries(${the_module} LINK_PRIVATE ${OPENCV_LINKER_LIBS} ${OPENCV_HAL_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
-  if (HAVE_CUDA)
+  if (HAVE_HIP)
     ocv_target_link_libraries(${the_module} LINK_PRIVATE ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
   endif()
 
