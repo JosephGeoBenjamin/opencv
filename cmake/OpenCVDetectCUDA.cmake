@@ -13,7 +13,7 @@ if(((NOT CMAKE_VERSION VERSION_LESS "3.9.0")  # requires https://gitlab.kitware.
       OR OPENCV_CUDA_FORCE_EXTERNAL_CMAKE_MODULE)
     AND NOT OPENCV_CUDA_FORCE_BUILTIN_CMAKE_MODULE)
   ocv_update(CUDA_LINK_LIBRARIES_KEYWORD "LINK_PRIVATE")
-  find_host_package(CUDA "${MIN_VER_CUDA}" QUIET)
+  find_host_package(HIP "${MIN_VER_HIP}"  QUIET)
 else()
   # Use OpenCV's patched "FindCUDA" module
   set(CMAKE_MODULE_PATH "${OpenCV_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -21,13 +21,14 @@ else()
   if(ANDROID)
     set(CUDA_TARGET_OS_VARIANT "Android")
   endif()
-  find_host_package(CUDA "${MIN_VER_CUDA}" QUIET)
+  find_host_package(HIP "${MIN_VER_HIP}" QUIET)
 
   list(REMOVE_AT CMAKE_MODULE_PATH 0)
 endif()
 
-if(CUDA_FOUND)
-  set(HAVE_CUDA 1)
+if(HIP_FOUND)
+  set(HAVE_CUDA 1) # MCW-TODO: Replace with HAVE_HIP across all files 
+  set(HAVE_HIP 1) 
 
   if(WITH_CUFFT)
     set(HAVE_CUFFT 1)
@@ -37,20 +38,21 @@ if(CUDA_FOUND)
     set(HAVE_CUBLAS 1)
   endif()
 
-  if(WITH_NVCUVID)
-    find_cuda_helper_libs(nvcuvid)
-    if(WIN32)
-      find_cuda_helper_libs(nvcuvenc)
-    endif()
-    if(CUDA_nvcuvid_LIBRARY)
-      set(HAVE_NVCUVID 1)
-    endif()
-    if(CUDA_nvcuvenc_LIBRARY)
-      set(HAVE_NVCUVENC 1)
-    endif()
-  endif()
+  # MCW-TODO: remove below lines or change to HIP equvalent once available
+  # if(WITH_NVCUVID)
+  #   find_cuda_helper_libs(nvcuvid)
+  #   if(WIN32)
+  #     find_cuda_helper_libs(nvcuvenc)
+  #   endif()
+  #   if(CUDA_nvcuvid_LIBRARY)
+  #     set(HAVE_NVCUVID 1)
+  #   endif()
+  #   if(CUDA_nvcuvenc_LIBRARY)
+  #     set(HAVE_NVCUVENC 1)
+  #   endif()
+  # endif()
 
-  message(STATUS "CUDA detected: " ${CUDA_VERSION})
+  message(STATUS "HIP detected: " ${HIP_VERSION}) 
 
   set(_generations "Fermi" "Kepler" "Maxwell" "Pascal" "Volta")
   if(NOT CMAKE_CROSSCOMPILING)
@@ -70,7 +72,7 @@ if(CUDA_FOUND)
     unset(CUDA_ARCH_PTX CACHE)
   endif()
 
-  SET(DETECT_ARCHS_COMMAND "${CUDA_NVCC_EXECUTABLE}" ${CUDA_NVCC_FLAGS} "${OpenCV_SOURCE_DIR}/cmake/checks/OpenCVDetectCudaArch.cu" "--run")
+  SET(DETECT_ARCHS_COMMAND "${HIP_HIPCC_EXECUTABLE}" ${HIP_HIPCC_FLAGS} "${OpenCV_SOURCE_DIR}/cmake/checks/OpenCVDetectCudaArch.cu" "--run")
   if(WIN32 AND CMAKE_LINKER) #Workaround for VS cl.exe not being in the env. path
     get_filename_component(host_compiler_bindir ${CMAKE_LINKER} DIRECTORY)
     SET(DETECT_ARCHS_COMMAND ${DETECT_ARCHS_COMMAND} "-ccbin" "${host_compiler_bindir}")
@@ -179,19 +181,19 @@ if(CUDA_FOUND)
   endforeach()
 
   # These vars will be processed in other scripts
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ${NVCC_FLAGS_EXTRA})
+  set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} ${NVCC_FLAGS_EXTRA})
   set(OpenCV_CUDA_CC "${NVCC_FLAGS_EXTRA}")
 
   if(ANDROID)
-    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-Xptxas;-dlcm=ca")
+    set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} "-Xptxas;-dlcm=ca")
   endif()
 
-  message(STATUS "CUDA NVCC target flags: ${CUDA_NVCC_FLAGS}")
+  message(STATUS "HIP HIPCC target flags: ${HIP_HIPCC_FLAGS}")
 
   OCV_OPTION(CUDA_FAST_MATH "Enable --use_fast_math for CUDA compiler " OFF)
 
   if(CUDA_FAST_MATH)
-    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --use_fast_math)
+    set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} --use_fast_math)
   endif()
 
   mark_as_advanced(CUDA_BUILD_CUBIN CUDA_BUILD_EMULATION CUDA_VERBOSE_BUILD CUDA_SDK_ROOT_DIR)
@@ -236,8 +238,8 @@ if(CUDA_FOUND)
       string(REGEX REPLACE "-Wimplicit-fallthrough(=[0-9]+)? " "" ${var} "${${var}}")
 
       # removal of custom specified options
-      if(OPENCV_CUDA_NVCC_FILTEROUT_OPTIONS)
-        foreach(__flag ${OPENCV_CUDA_NVCC_FILTEROUT_OPTIONS})
+      if(OPENCV_HIP_HIPCC_FILTEROUT_OPTIONS)
+        foreach(__flag ${OPENCV_HIP_HIPCC_FILTEROUT_OPTIONS})
           string(REPLACE "${__flag}" "" ${var} "${${var}}")
         endforeach()
       endif()
@@ -248,18 +250,18 @@ if(CUDA_FOUND)
     ocv_cuda_filter_options()
 
     if(BUILD_SHARED_LIBS)
-      set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xcompiler -DCVAPI_EXPORTS)
+      set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} -Xcompiler -DCVAPI_EXPORTS)
     endif()
 
     if(UNIX OR APPLE)
-      set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xcompiler -fPIC --std=c++11)
+      set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} -Xcompiler -fPIC --std=c++11)
     endif()
     if(APPLE)
-      set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xcompiler -fno-finite-math-only)
+      set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} -Xcompiler -fno-finite-math-only)
     endif()
 
     if(CMAKE_CROSSCOMPILING AND (ARM OR AARCH64))
-      set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xlinker --unresolved-symbols=ignore-in-shared-libs)
+      set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} -Xlinker --unresolved-symbols=ignore-in-shared-libs)
     endif()
 
     # disabled because of multiple warnings during building nvcc auto generated files
@@ -267,7 +269,12 @@ if(CUDA_FOUND)
       ocv_warnings_disable(CMAKE_CXX_FLAGS -Wunused-but-set-variable)
     endif()
 
-    CUDA_COMPILE(${VAR} ${ARGN})
+    HIP_COMPILE(${VAR} ${ARGN})
+    # TODO-MCW : Avoid explicit setting of include and links
+    INCLUDE_DIRECTORIES("/opt/rocm/hip/include/" "/usr/local/cuda/include/")
+    LINK_DIRECTORIES("/opt/rocm/hip/lib/" "/usr/local/cuda/lib64/")
+
+
 
     foreach(var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_DEBUG)
       set(${var} "${${var}_backup_in_cuda_compile_}")

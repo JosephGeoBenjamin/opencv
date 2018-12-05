@@ -1328,9 +1328,9 @@ endfunction()
 
 function(ocv_add_library target)
   if(HAVE_CUDA AND ARGN MATCHES "\\.cu")
-    ocv_include_directories(${CUDA_INCLUDE_DIRS})
+    ocv_include_directories(${HIP_INCLUDE_DIRS})
     ocv_cuda_compile(cuda_objs ${ARGN})
-    set(OPENCV_MODULE_${target}_CUDA_OBJECTS ${cuda_objs} CACHE INTERNAL "Compiled CUDA object files")
+    set(OPENCV_MODULE_${target}_CUDA_OBJECTS ${cuda_objs} CACHE INTERNAL "Compiled HIP object files")
   endif()
 
   add_library(${target} ${ARGN} ${cuda_objs})
