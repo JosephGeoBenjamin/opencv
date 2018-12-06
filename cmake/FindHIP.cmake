@@ -1,4 +1,3 @@
-
 ###############################################################################
 # FindHIP.cmake
 ###############################################################################
@@ -394,8 +393,8 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     set(HIP_HIPCC_INCLUDE_ARGS ${HIP_HIPCC_INCLUDE_ARGS_USER})
 
     # Add the include directories
-    set(include_directories_generator "$<TARGET_PROPERTY:${_target},INCLUDE_DIRECTORIES>")
-    list(APPEND HIP_HIPCC_INCLUDE_ARGS "$<$<BOOL:${include_directories_generator}>:-I$<JOIN:${include_directories_generator}, -I>>")
+    #set(include_directories_generator "$<TARGET_PROPERTY:${_target},INCLUDE_DIRECTORIES>")
+    #list(APPEND HIP_HIPCC_INCLUDE_ARGS "$<$<BOOL:${include_directories_generator}>:-I$<JOIN:${include_directories_generator}, -I>>")
 
     get_directory_property(_hip_include_directories INCLUDE_DIRECTORIES)
     list(REMOVE_DUPLICATES _hip_include_directories)
@@ -411,8 +410,8 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     HIP_PARSE_HIPCC_OPTIONS(HIP_NVCC_FLAGS ${_nvcc_options})
 
     # Add the compile definitions
-    set(compile_definition_generator "$<TARGET_PROPERTY:${_target},COMPILE_DEFINITIONS>")
-    list(APPEND HIP_HIPCC_FLAGS "$<$<BOOL:${compile_definition_generator}>:-D$<JOIN:${compile_definition_generator}, -D>>")
+    #set(compile_definition_generator "$<TARGET_PROPERTY:${_target},COMPILE_DEFINITIONS>")
+    #list(APPEND HIP_HIPCC_FLAGS "$<$<BOOL:${compile_definition_generator}>:-D$<JOIN:${compile_definition_generator}, -D>>")
 
     # Check if we are building shared library.
     set(_hip_build_shared_libs FALSE)
@@ -577,13 +576,15 @@ macro(HIP_ADD_LIBRARY hip_target)
     set_target_properties(${hip_target} PROPERTIES LINKER_LANGUAGE ${HIP_C_OR_CXX})
 endmacro()
 
+
 ###############################################################################
 ###############################################################################
 # (Internal) helper for manually added hip source files with specific targets
 ###############################################################################
 ###############################################################################
 macro(hip_compile_base hip_target format generated_files)
-   # Separate the sources from the options
+
+  # Separate the sources from the options
   HIP_GET_SOURCES_AND_OPTIONS(_sources _cmake_options _hipcc_options _hcc_options _nvcc_options ${ARGN})
   HIP_PREPARE_TARGET_COMMANDS(${hip_target} OBJ _generated_files _source_files ${_sources} ${_cmake_options} HIPCC_OPTIONS ${_hipcc_options} HCC_OPTIONS ${_hcc_options} NVCC_OPTIONS ${_nvcc_options})
   if(_source_files)
@@ -591,8 +592,10 @@ macro(hip_compile_base hip_target format generated_files)
   endif()
  
   set( ${generated_files} ${_generated_files})
- endmacro()
- ###############################################################################
+
+endmacro()
+
+###############################################################################
 ###############################################################################
 # HIP COMPILE
 ###############################################################################
@@ -600,4 +603,6 @@ macro(hip_compile_base hip_target format generated_files)
 macro(HIP_COMPILE generated_files)
   hip_compile_base(hip_compile OBJ ${generated_files} ${ARGN})
 endmacro()
+
+
 # vim: ts=4:sw=4:expandtab:smartindent
