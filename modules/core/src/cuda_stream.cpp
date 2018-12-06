@@ -170,8 +170,8 @@ namespace
 
         if (totalSize > 0)
         {
-            cudaError_t err = cudaMalloc(&mem_, totalSize);
-            if (err != cudaSuccess)
+            hipError_t err = hipMalloc(&mem_, totalSize);
+            if (err != hipSuccess)
                 return;
 
             stacks_.resize(stackCount_);
@@ -205,7 +205,7 @@ namespace
             }
 #endif
 
-            cudaFree(mem_);
+            hipFree(mem_);
 
             mem_ = 0;
             initialized_ = false;
@@ -286,21 +286,21 @@ namespace
 class cv::cuda::Stream::Impl
 {
 public:
-    cudaStream_t stream;
+    hipStream_t stream;
     bool ownStream;
 
     Ptr<GpuMat::Allocator> allocator;
 
     Impl();
     Impl(const Ptr<GpuMat::Allocator>& allocator);
-    explicit Impl(cudaStream_t stream);
+    explicit Impl(hipStream_t stream);
 
     ~Impl();
 };
 
 cv::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
 {
-    cudaSafeCall( cudaStreamCreate(&stream) );
+    cudaSafeCall( hipStreamCreate(&stream) );
     ownStream = true;
 
     allocator = makePtr<StackAllocator>(stream);
@@ -308,11 +308,11 @@ cv::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
 
 cv::cuda::Stream::Impl::Impl(const Ptr<GpuMat::Allocator>& allocator) : stream(0), ownStream(false), allocator(allocator)
 {
-    cudaSafeCall( cudaStreamCreate(&stream) );
+    cudaSafeCall( hipStreamCreate(&stream) );
     ownStream = true;
 }
 
-cv::cuda::Stream::Impl::Impl(cudaStream_t stream_) : stream(stream_), ownStream(false)
+cv::cuda::Stream::Impl::Impl(hipStream_t stream_) : stream(stream_), ownStream(false)
 {
     allocator = makePtr<StackAllocator>(stream);
 }
@@ -323,7 +323,7 @@ cv::cuda::Stream::Impl::~Impl()
 
     if (stream && ownStream)
     {
-        cudaStreamDestroy(stream);
+        hipStreamDestroy(stream);
     }
 }
 
@@ -366,7 +366,7 @@ namespace cv { namespace cuda
 
         for (size_t i = 0; i < pools_.size(); ++i)
         {
-            cudaSetDevice(static_cast<int>(i));
+            hipSetDevice(static_cast<int>(i));
             pools_[i]->release();
         }
 
@@ -389,7 +389,7 @@ namespace cv { namespace cuda
 
         if (streams_[deviceId].empty())
         {
-            cudaStream_t stream = NULL;
+            hipStream_t stream = NULL;
             Ptr<Stream::Impl> impl = makePtr<Stream::Impl>(stream);
             streams_[deviceId] = Ptr<Stream>(new Stream(impl));
         }
@@ -410,7 +410,7 @@ namespace cv { namespace cuda
                 pools_.resize(deviceCount);
                 for (size_t i = 0; i < pools_.size(); ++i)
                 {
-                    cudaSetDevice(static_cast<int>(i));
+                    hipSetDevice(static_cast<int>(i));
                     pools_[i] = makePtr<MemoryPool>();
                 }
             }
@@ -455,10 +455,10 @@ bool cv::cuda::Stream::queryIfComplete() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    cudaError_t err = cudaStreamQuery(impl_->stream);
+    hipError_t err = cudaStreamQuery(impl_->stream);
 
-    if (err == cudaErrorNotReady || err == cudaSuccess)
-        return err == cudaSuccess;
+    if (err == hipErrorNotReady || err == hipSuccess)
+        return err == hipSuccess;
 
     cudaSafeCall(err);
     return false;
@@ -470,7 +470,7 @@ void cv::cuda::Stream::waitForCompletion()
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaStreamSynchronize(impl_->stream) );
+    cudaSafeCall( hipStreamSynchronize(impl_->stream) );
 #endif
 }
 
@@ -480,7 +480,7 @@ void cv::cuda::Stream::waitEvent(const Event& event)
     CV_UNUSED(event);
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaStreamWaitEvent(impl_->stream, EventAccessor::getEvent(event), 0) );
+    cudaSafeCall( hipStreamWaitEvent(impl_->stream, EventAccessor::getEvent(event), 0) );
 #endif
 }
 
@@ -496,7 +496,7 @@ namespace
         CallbackData(Stream::StreamCallback callback_, void* userData_) : callback(callback_), userData(userData_) {}
     };
 
-    void CUDART_CB cudaStreamCallback(cudaStream_t, cudaError_t status, void* userData)
+    void CUDART_CB cudaStreamCallback(hipStream_t, hipError_t status, void* userData)
     {
         CallbackData* data = reinterpret_cast<CallbackData*>(userData);
         data->callback(static_cast<int>(status), data->userData);
@@ -546,12 +546,12 @@ cv::cuda::Stream::operator bool_type() const
 
 #ifdef HAVE_HIP
 
-cudaStream_t cv::cuda::StreamAccessor::getStream(const Stream& stream)
+hipStream_t cv::cuda::StreamAccessor::getStream(const Stream& stream)
 {
     return stream.impl_->stream;
 }
 
-Stream cv::cuda::StreamAccessor::wrapStream(cudaStream_t stream)
+Stream cv::cuda::StreamAccessor::wrapStream(hipStream_t stream)
 {
     return Stream(makePtr<Stream::Impl>(stream));
 }
@@ -570,7 +570,7 @@ namespace
     class StackAllocator : public GpuMat::Allocator
     {
     public:
-        explicit StackAllocator(cudaStream_t stream);
+        explicit StackAllocator(hipStream_t stream);
         ~StackAllocator();
 
         bool allocate(GpuMat* mat, int rows, int cols, size_t elemSize) CV_OVERRIDE;
@@ -580,12 +580,12 @@ namespace
         StackAllocator(const StackAllocator&);
         StackAllocator& operator =(const StackAllocator&);
 
-        cudaStream_t stream_;
+        hipStream_t stream_;
         MemoryStack* memStack_;
         size_t alignment_;
     };
 
-    StackAllocator::StackAllocator(cudaStream_t stream) : stream_(stream), memStack_(0)
+    StackAllocator::StackAllocator(hipStream_t stream) : stream_(stream), memStack_(0)
     {
         if (enableMemoryPool)
         {
@@ -600,7 +600,7 @@ namespace
     {
         if (memStack_ != 0)
         {
-            cudaStreamSynchronize(stream_);
+            hipStreamSynchronize(stream_);
             memStack_->pool->returnMemStack(memStack_);
         }
     }
@@ -745,21 +745,21 @@ public:
 class cv::cuda::Event::Impl
 {
 public:
-    cudaEvent_t event;
+    hipEvent_t event;
     bool ownEvent;
 
     explicit Impl(unsigned int flags);
-    explicit Impl(cudaEvent_t event);
+    explicit Impl(hipEvent_t event);
     ~Impl();
 };
 
 cv::cuda::Event::Impl::Impl(unsigned int flags) : event(0), ownEvent(false)
 {
-    cudaSafeCall( cudaEventCreateWithFlags(&event, flags) );
+    cudaSafeCall( hipEventCreateWithFlags(&event, flags) );
     ownEvent = true;
 }
 
-cv::cuda::Event::Impl::Impl(cudaEvent_t e) : event(e), ownEvent(false)
+cv::cuda::Event::Impl::Impl(hipEvent_t e) : event(e), ownEvent(false)
 {
 }
 
@@ -767,16 +767,16 @@ cv::cuda::Event::Impl::~Impl()
 {
     if (event && ownEvent)
     {
-        cudaEventDestroy(event);
+        hipEventDestroy(event);
     }
 }
 
-cudaEvent_t cv::cuda::EventAccessor::getEvent(const Event& event)
+hipEvent_t cv::cuda::EventAccessor::getEvent(const Event& event)
 {
     return event.impl_->event;
 }
 
-Event cv::cuda::EventAccessor::wrapEvent(cudaEvent_t event)
+Event cv::cuda::EventAccessor::wrapEvent(hipEvent_t event)
 {
     return Event(makePtr<Event::Impl>(event));
 }
@@ -799,7 +799,7 @@ void cv::cuda::Event::record(Stream& stream)
     CV_UNUSED(stream);
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaEventRecord(impl_->event, StreamAccessor::getStream(stream)) );
+    cudaSafeCall( hipEventRecord(impl_->event, StreamAccessor::getStream(stream)) );
 #endif
 }
 
@@ -808,10 +808,10 @@ bool cv::cuda::Event::queryIfComplete() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    cudaError_t err = cudaEventQuery(impl_->event);
+    hipError_t err = hipEventQuery(impl_->event);
 
-    if (err == cudaErrorNotReady || err == cudaSuccess)
-        return err == cudaSuccess;
+    if (err == hipErrorNotReady || err == hipSuccess)
+        return err == hipSuccess;
 
     cudaSafeCall(err);
     return false;
@@ -823,7 +823,7 @@ void cv::cuda::Event::waitForCompletion()
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaEventSynchronize(impl_->event) );
+    cudaSafeCall( hipEventSynchronize(impl_->event) );
 #endif
 }
 
@@ -835,7 +835,7 @@ float cv::cuda::Event::elapsedTime(const Event& start, const Event& end)
     throw_no_cuda();
 #else
     float ms;
-    cudaSafeCall( cudaEventElapsedTime(&ms, start.impl_->event, end.impl_->event) );
+    cudaSafeCall( hipEventElapsedTime(&ms, start.impl_->event, end.impl_->event) );
     return ms;
 #endif
 }

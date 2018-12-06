@@ -68,7 +68,7 @@ namespace
         {
 #ifndef __CUDA_ARCH__
             uchar* ptr;
-            CV_CUDEV_SAFE_CALL(cudaMalloc(&ptr, numBytes));
+            CV_CUDEV_SAFE_CALL(hipMalloc(&ptr, numBytes));
             return ptr;
 #else
             return NULL;
@@ -78,7 +78,7 @@ namespace
         {
             CV_UNUSED(numBytes);
 #ifndef __CUDA_ARCH__
-            CV_CUDEV_SAFE_CALL(cudaFree(ptr));
+            CV_CUDEV_SAFE_CALL(hipFree(ptr));
 #endif
         }
     };
@@ -113,12 +113,12 @@ namespace
     {
         if (rows > 1 && cols > 1)
         {
-            CV_CUDEV_SAFE_CALL( cudaMallocPitch(&mat->data, &mat->step, elemSize * cols, rows) );
+            CV_CUDEV_SAFE_CALL( hipMallocPitch(&mat->data, &mat->step, elemSize * cols, rows) );
         }
         else
         {
             // Single row or single column must be continuous
-            CV_CUDEV_SAFE_CALL( cudaMalloc(&mat->data, elemSize * cols * rows) );
+            CV_CUDEV_SAFE_CALL( hipMalloc(&mat->data, elemSize * cols * rows) );
             mat->step = elemSize * cols;
         }
 
@@ -129,7 +129,7 @@ namespace
 
     void DefaultAllocator::free(GpuMat* mat)
     {
-        cudaFree(mat->datastart);
+        hipFree(mat->datastart);
         fastFree(mat->refcount);
     }
 
@@ -221,7 +221,7 @@ void cv::cuda::GpuMat::upload(InputArray arr)
 
     create(mat.size(), mat.type());
 
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2D(data, step, mat.data, mat.step, cols * elemSize(), rows, cudaMemcpyHostToDevice) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2D(data, step, mat.data, mat.step, cols * elemSize(), rows, hipMemcpyHostToDevice) );
 }
 
 void cv::cuda::GpuMat::upload(InputArray arr, Stream& _stream)
@@ -232,8 +232,8 @@ void cv::cuda::GpuMat::upload(InputArray arr, Stream& _stream)
 
     create(mat.size(), mat.type());
 
-    cudaStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(data, step, mat.data, mat.step, cols * elemSize(), rows, cudaMemcpyHostToDevice, stream) );
+    hipStream_t stream = StreamAccessor::getStream(_stream);
+    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(data, step, mat.data, mat.step, cols * elemSize(), rows, hipMemcpyHostToDevice, stream) );
 }
 
 /////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ void cv::cuda::GpuMat::download(OutputArray _dst) const
     _dst.create(size(), type());
     Mat dst = _dst.getMat();
 
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2D(dst.data, dst.step, data, step, cols * elemSize(), rows, cudaMemcpyDeviceToHost) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2D(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToHost) );
 }
 
 void cv::cuda::GpuMat::download(OutputArray _dst, Stream& _stream) const
@@ -256,8 +256,8 @@ void cv::cuda::GpuMat::download(OutputArray _dst, Stream& _stream) const
     _dst.create(size(), type());
     Mat dst = _dst.getMat();
 
-    cudaStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, cudaMemcpyDeviceToHost, stream) );
+    hipStream_t stream = StreamAccessor::getStream(_stream);
+    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToHost, stream) );
 }
 
 /////////////////////////////////////////////////////
@@ -270,7 +270,7 @@ void cv::cuda::GpuMat::copyTo(OutputArray _dst) const
     _dst.create(size(), type());
     GpuMat dst = _dst.getGpuMat();
 
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2D(dst.data, dst.step, data, step, cols * elemSize(), rows, cudaMemcpyDeviceToDevice) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2D(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToDevice) );
 }
 
 void cv::cuda::GpuMat::copyTo(OutputArray _dst, Stream& _stream) const
@@ -280,8 +280,8 @@ void cv::cuda::GpuMat::copyTo(OutputArray _dst, Stream& _stream) const
     _dst.create(size(), type());
     GpuMat dst = _dst.getGpuMat();
 
-    cudaStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, cudaMemcpyDeviceToDevice, stream) );
+    hipStream_t stream = StreamAccessor::getStream(_stream);
+    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToDevice, stream) );
 }
 
 namespace

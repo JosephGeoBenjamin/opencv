@@ -51,12 +51,12 @@ int cv::cuda::getCudaEnabledDeviceCount()
     return 0;
 #else
     int count;
-    cudaError_t error = cudaGetDeviceCount(&count);
+    hipError_t error = hipGetDeviceCount(&count);
 
     if (error == cudaErrorInsufficientDriver)
         return -1;
 
-    if (error == cudaErrorNoDevice)
+    if (error == hipErrorNoDevice)
         return 0;
 
     cudaSafeCall( error );
@@ -70,8 +70,8 @@ void cv::cuda::setDevice(int device)
     CV_UNUSED(device);
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaSetDevice(device) );
-    cudaSafeCall( cudaFree(0) );
+    cudaSafeCall( hipSetDevice(device) );
+    cudaSafeCall( hipFree(0) );
 #endif
 }
 
@@ -81,7 +81,7 @@ int cv::cuda::getDevice()
     throw_no_cuda();
 #else
     int device;
-    cudaSafeCall( cudaGetDevice(&device) );
+    cudaSafeCall( hipGetDevice(&device) );
     return device;
 #endif
 }
@@ -91,7 +91,7 @@ void cv::cuda::resetDevice()
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    cudaSafeCall( cudaDeviceReset() );
+    cudaSafeCall( hipDeviceReset() );
 #endif
 }
 
@@ -301,10 +301,10 @@ namespace
     public:
         DeviceProps();
 
-        const cudaDeviceProp* get(int devID) const;
+        const hipDeviceProp_t* get(int devID) const;
 
     private:
-        std::vector<cudaDeviceProp> props_;
+        std::vector<hipDeviceProp_t> props_;
     };
 
     DeviceProps::DeviceProps()
@@ -317,12 +317,12 @@ namespace
 
             for (int devID = 0; devID < count; ++devID)
             {
-                cudaSafeCall( cudaGetDeviceProperties(&props_[devID], devID) );
+                cudaSafeCall( hipGetDeviceProperties(&props_[devID], devID) );
             }
         }
     }
 
-    const cudaDeviceProp* DeviceProps::get(int devID) const
+    const hipDeviceProp_t* DeviceProps::get(int devID) const
     {
         CV_Assert( static_cast<size_t>(devID) < props_.size() );
 
@@ -835,7 +835,7 @@ void cv::cuda::DeviceInfo::queryMemory(size_t& _totalMemory, size_t& _freeMemory
     if (prevDeviceID != device_id_)
         setDevice(device_id_);
 
-    cudaSafeCall( cudaMemGetInfo(&_freeMemory, &_totalMemory) );
+    cudaSafeCall( hipMemGetInfo(&_freeMemory, &_totalMemory) );
 
     if (prevDeviceID != device_id_)
         setDevice(prevDeviceID);
@@ -907,22 +907,22 @@ void cv::cuda::printCudaDeviceInfo(int device)
     printf("Device count: %d\n", count);
 
     int driverVersion = 0, runtimeVersion = 0;
-    cudaSafeCall( cudaDriverGetVersion(&driverVersion) );
+    cudaSafeCall( hipDriverGetVersion(&driverVersion) );
     cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
 
     const char *computeMode[] = {
-        "Default (multiple host threads can use ::cudaSetDevice() with device simultaneously)",
-        "Exclusive (only one host thread in one process is able to use ::cudaSetDevice() with this device)",
-        "Prohibited (no host thread can use ::cudaSetDevice() with this device)",
-        "Exclusive Process (many threads in one process is able to use ::cudaSetDevice() with this device)",
+        "Default (multiple host threads can use ::hipSetDevice() with device simultaneously)",
+        "Exclusive (only one host thread in one process is able to use ::hipSetDevice() with this device)",
+        "Prohibited (no host thread can use ::hipSetDevice() with this device)",
+        "Exclusive Process (many threads in one process is able to use ::hipSetDevice() with this device)",
         "Unknown",
         NULL
     };
 
     for(int dev = beg; dev < end; ++dev)
     {
-        cudaDeviceProp prop;
-        cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
+        hipDeviceProp_t prop;
+        cudaSafeCall( hipGetDeviceProperties(&prop, dev) );
 
         printf("\nDevice %d: \"%s\"\n", dev, prop.name);
         printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
@@ -990,13 +990,13 @@ void cv::cuda::printShortCudaDeviceInfo(int device)
     int end = valid ? device+1 : count;
 
     int driverVersion = 0, runtimeVersion = 0;
-    cudaSafeCall( cudaDriverGetVersion(&driverVersion) );
+    cudaSafeCall( hipDriverGetVersion(&driverVersion) );
     cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
 
     for(int dev = beg; dev < end; ++dev)
     {
-        cudaDeviceProp prop;
-        cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
+        hipDeviceProp_t prop;
+        cudaSafeCall( hipGetDeviceProperties(&prop, dev) );
 
         const char *arch_str = prop.major < 2 ? " (not Fermi)" : "";
         printf("Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);

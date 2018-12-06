@@ -136,11 +136,11 @@ namespace
         void registerBuffer(GLuint buffer);
         void release();
 
-        void copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream = 0);
-        void copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream = 0);
+        void copyFrom(const void* src, size_t spitch, size_t width, size_t height, hipStream_t stream = 0);
+        void copyTo(void* dst, size_t dpitch, size_t width, size_t height, hipStream_t stream = 0);
 
-        void* map(cudaStream_t stream = 0);
-        void unmap(cudaStream_t stream = 0);
+        void* map(hipStream_t stream = 0);
+        void unmap(hipStream_t stream = 0);
 
     private:
         cudaGraphicsResource_t resource_;
@@ -186,17 +186,17 @@ namespace
     class CudaResource::GraphicsMapHolder
     {
     public:
-        GraphicsMapHolder(cudaGraphicsResource_t* resource, cudaStream_t stream);
+        GraphicsMapHolder(cudaGraphicsResource_t* resource, hipStream_t stream);
         ~GraphicsMapHolder();
 
         void reset();
 
     private:
         cudaGraphicsResource_t* resource_;
-        cudaStream_t stream_;
+        hipStream_t stream_;
     };
 
-    CudaResource::GraphicsMapHolder::GraphicsMapHolder(cudaGraphicsResource_t* resource, cudaStream_t stream) : resource_(resource), stream_(stream)
+    CudaResource::GraphicsMapHolder::GraphicsMapHolder(cudaGraphicsResource_t* resource, hipStream_t stream) : resource_(resource), stream_(stream)
     {
         if (resource_)
             cudaSafeCall( cudaGraphicsMapResources(1, resource_, stream_) );
@@ -213,7 +213,7 @@ namespace
         resource_ = 0;
     }
 
-    void CudaResource::copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream)
+    void CudaResource::copyFrom(const void* src, size_t spitch, size_t width, size_t height, hipStream_t stream)
     {
         CV_DbgAssert( resource_ != 0 );
 
@@ -227,12 +227,12 @@ namespace
         CV_DbgAssert( width * height == size );
 
         if (stream == 0)
-            cudaSafeCall( cudaMemcpy2D(dst, width, src, spitch, width, height, cudaMemcpyDeviceToDevice) );
+            cudaSafeCall( hipMemcpy2D(dst, width, src, spitch, width, height, hipMemcpyDeviceToDevice) );
         else
-            cudaSafeCall( cudaMemcpy2DAsync(dst, width, src, spitch, width, height, cudaMemcpyDeviceToDevice, stream) );
+            cudaSafeCall( cudaMemcpy2DAsync(dst, width, src, spitch, width, height, hipMemcpyDeviceToDevice, stream) );
     }
 
-    void CudaResource::copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream)
+    void CudaResource::copyTo(void* dst, size_t dpitch, size_t width, size_t height, hipStream_t stream)
     {
         CV_DbgAssert( resource_ != 0 );
 
@@ -246,12 +246,12 @@ namespace
         CV_DbgAssert( width * height == size );
 
         if (stream == 0)
-            cudaSafeCall( cudaMemcpy2D(dst, dpitch, src, width, width, height, cudaMemcpyDeviceToDevice) );
+            cudaSafeCall( hipMemcpy2D(dst, dpitch, src, width, width, height, hipMemcpyDeviceToDevice) );
         else
-            cudaSafeCall( cudaMemcpy2DAsync(dst, dpitch, src, width, width, height, cudaMemcpyDeviceToDevice, stream) );
+            cudaSafeCall( cudaMemcpy2DAsync(dst, dpitch, src, width, width, height, hipMemcpyDeviceToDevice, stream) );
     }
 
-    void* CudaResource::map(cudaStream_t stream)
+    void* CudaResource::map(hipStream_t stream)
     {
         CV_DbgAssert( resource_ != 0 );
 
@@ -266,7 +266,7 @@ namespace
         return ptr;
     }
 
-    void CudaResource::unmap(cudaStream_t stream)
+    void CudaResource::unmap(hipStream_t stream)
     {
         CV_Assert( resource_ != 0 );
 
@@ -307,11 +307,11 @@ public:
     void unmapHost();
 
 #ifdef HAVE_HIP
-    void copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream = 0);
-    void copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream = 0) const;
+    void copyFrom(const void* src, size_t spitch, size_t width, size_t height, hipStream_t stream = 0);
+    void copyTo(void* dst, size_t dpitch, size_t width, size_t height, hipStream_t stream = 0) const;
 
-    void* mapDevice(cudaStream_t stream = 0);
-    void unmapDevice(cudaStream_t stream = 0);
+    void* mapDevice(hipStream_t stream = 0);
+    void unmapDevice(hipStream_t stream = 0);
 #endif
 
     void setAutoRelease(bool flag) { autoRelease_ = flag; }
@@ -421,25 +421,25 @@ void cv::ogl::Buffer::Impl::unmapHost()
 
 #ifdef HAVE_HIP
 
-void cv::ogl::Buffer::Impl::copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream)
+void cv::ogl::Buffer::Impl::copyFrom(const void* src, size_t spitch, size_t width, size_t height, hipStream_t stream)
 {
     cudaResource_.registerBuffer(bufId_);
     cudaResource_.copyFrom(src, spitch, width, height, stream);
 }
 
-void cv::ogl::Buffer::Impl::copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream) const
+void cv::ogl::Buffer::Impl::copyTo(void* dst, size_t dpitch, size_t width, size_t height, hipStream_t stream) const
 {
     cudaResource_.registerBuffer(bufId_);
     cudaResource_.copyTo(dst, dpitch, width, height, stream);
 }
 
-void* cv::ogl::Buffer::Impl::mapDevice(cudaStream_t stream)
+void* cv::ogl::Buffer::Impl::mapDevice(hipStream_t stream)
 {
     cudaResource_.registerBuffer(bufId_);
     return cudaResource_.map(stream);
 }
 
-void cv::ogl::Buffer::Impl::unmapDevice(cudaStream_t stream)
+void cv::ogl::Buffer::Impl::unmapDevice(hipStream_t stream)
 {
     cudaResource_.unmap(stream);
 }

@@ -379,7 +379,7 @@ If custom allocator is not specified, BufferPool utilizes StackAllocator by
 default. StackAllocator allocates a chunk of GPU device memory beforehand,
 and when GpuMat is declared later on, it is given the pre-allocated memory.
 This kind of strategy reduces the number of calls for memory allocating APIs
-such as cudaMalloc or cudaMallocPitch.
+such as hipMalloc or hipMallocPitch.
 
 Below is an example that utilizes BufferPool with StackAllocator:
 
@@ -893,15 +893,15 @@ public:
     //! device is integrated as opposed to discrete
     CV_WRAP bool integrated() const;
 
-    //! device can map host memory with cudaHostAlloc/cudaHostGetDevicePointer
+    //! device can map host memory with hipHostMalloc/hipHostGetDevicePointer
     CV_WRAP bool canMapHostMemory() const;
 
     enum ComputeMode
     {
-        ComputeModeDefault,         /**< default compute mode (Multiple threads can use cudaSetDevice with this device) */
-        ComputeModeExclusive,       /**< compute-exclusive-thread mode (Only one thread in one process will be able to use cudaSetDevice with this device) */
-        ComputeModeProhibited,      /**< compute-prohibited mode (No threads can use cudaSetDevice with this device) */
-        ComputeModeExclusiveProcess /**< compute-exclusive-process mode (Many threads in one process will be able to use cudaSetDevice with this device) */
+        ComputeModeDefault,         /**< default compute mode (Multiple threads can use hipSetDevice with this device) */
+        ComputeModeExclusive,       /**< compute-exclusive-thread mode (Only one thread in one process will be able to use hipSetDevice with this device) */
+        ComputeModeProhibited,      /**< compute-prohibited mode (No threads can use hipSetDevice with this device) */
+        ComputeModeExclusiveProcess /**< compute-exclusive-process mode (Many threads in one process will be able to use hipSetDevice with this device) */
     };
 
     //! compute mode

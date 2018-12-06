@@ -57,12 +57,12 @@
 
 #ifdef HAVE_HIP
 #  include <cuda.h>
-#  include <cuda_runtime.h>
+#  include <hip/hip_runtime.h>
 #  if defined(__CUDACC_VER_MAJOR__) && (8 <= __CUDACC_VER_MAJOR__)
-#    if defined (__GNUC__) && !defined(__CUDACC__)
+#    if defined (__GNUC__) && !defined(__HIPCC__)
 #     pragma GCC diagnostic push
 #     pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#     include <cuda_fp16.h>
+#     include <hip/hip_fp16.h>
 #     pragma GCC diagnostic pop
 #    else
 #     include <cuda_fp16.h>
@@ -108,7 +108,7 @@ static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::GpuNotSuppo
 
 #else // HAVE_HIP
 
-#define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { cudaStreamSynchronize(oldStream); nppSetStream(newStream); } }
+#define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { hipStreamSynchronize(oldStream); nppSetStream(newStream); } }
 
 static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::StsNotImplemented, "The called functionality is disabled for current build or platform"); }
 
@@ -144,7 +144,7 @@ namespace cv { namespace cuda
             nppSafeSetStream(oldStream, StreamAccessor::getStream(newStream));
         }
 
-        inline explicit NppStreamHandler(cudaStream_t newStream)
+        inline explicit NppStreamHandler(hipStream_t newStream)
         {
             oldStream = nppGetStream();
             nppSafeSetStream(oldStream, newStream);
@@ -156,7 +156,7 @@ namespace cv { namespace cuda
         }
 
     private:
-        cudaStream_t oldStream;
+        hipStream_t oldStream;
     };
 }}
 

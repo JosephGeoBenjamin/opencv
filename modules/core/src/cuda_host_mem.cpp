@@ -92,7 +92,7 @@ public:
         else
         {
             void* ptr = 0;
-            cudaSafeCall( cudaHostAlloc(&ptr, total, flags_) );
+            cudaSafeCall( hipHostMalloc(&ptr, total, flags_) );
 
             u->data = u->origdata = static_cast<uchar*>(ptr);
         }
@@ -117,7 +117,7 @@ public:
         {
             if ( !(u->flags & UMatData::USER_ALLOCATED) )
             {
-                cudaFreeHost(u->origdata);
+                hipHostFree(u->origdata);
                 u->origdata = 0;
             }
 
@@ -141,13 +141,13 @@ MatAllocator* cv::cuda::HostMem::getAllocator(AllocType alloc_type)
 #else
     static std::map<unsigned int, Ptr<MatAllocator> > allocators;
 
-    unsigned int flag = cudaHostAllocDefault;
+    unsigned int flag = hipHostMallocDefault;
 
     switch (alloc_type)
     {
-    case PAGE_LOCKED:    flag = cudaHostAllocDefault; break;
-    case SHARED:         flag = cudaHostAllocMapped;  break;
-    case WRITE_COMBINED: flag = cudaHostAllocWriteCombined; break;
+    case PAGE_LOCKED:    flag = hipHostMallocDefault; break;
+    case SHARED:         flag = hipHostMallocMapped;  break;
+    case WRITE_COMBINED: flag = hipHostMallocWriteCombined; break;
     default:             CV_Error(cv::Error::StsBadFlag, "Invalid alloc type");
     }
 
@@ -227,9 +227,9 @@ void cv::cuda::HostMem::create(int rows_, int cols_, int type_)
 
         switch (alloc_type)
         {
-        case PAGE_LOCKED:    cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocDefault) ); break;
-        case SHARED:         cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocMapped) );  break;
-        case WRITE_COMBINED: cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocWriteCombined) ); break;
+        case PAGE_LOCKED:    cudaSafeCall( hipHostMalloc(&ptr, datasize, hipHostMallocDefault) ); break;
+        case SHARED:         cudaSafeCall( hipHostMalloc(&ptr, datasize, hipHostMallocMapped) );  break;
+        case WRITE_COMBINED: cudaSafeCall( hipHostMalloc(&ptr, datasize, hipHostMallocWriteCombined) ); break;
         default:             CV_Error(cv::Error::StsBadFlag, "Invalid alloc type");
         }
 
@@ -290,7 +290,7 @@ void cv::cuda::HostMem::release()
 #ifdef HAVE_HIP
     if (refcount && CV_XADD(refcount, -1) == 1)
     {
-        cudaFreeHost(datastart);
+        hipHostFree(datastart);
         fastFree(refcount);
     }
 
@@ -308,7 +308,7 @@ GpuMat cv::cuda::HostMem::createGpuMatHeader() const
     CV_Assert( alloc_type == SHARED );
 
     void *pdev;
-    cudaSafeCall( cudaHostGetDevicePointer(&pdev, data, 0) );
+    cudaSafeCall( hipHostGetDevicePointer(&pdev, data, 0) );
 
     return GpuMat(rows, cols, type(), pdev, step);
 #endif
@@ -321,7 +321,7 @@ void cv::cuda::registerPageLocked(Mat& m)
     throw_no_cuda();
 #else
     CV_Assert( m.isContinuous() );
-    cudaSafeCall( cudaHostRegister(m.data, m.step * m.rows, cudaHostRegisterPortable) );
+    cudaSafeCall( hipHostRegister(m.data, m.step * m.rows, cudaHostRegisterPortable) );
 #endif
 }
 
@@ -330,6 +330,6 @@ void cv::cuda::unregisterPageLocked(Mat& m)
 #ifndef HAVE_HIP
     CV_UNUSED(m);
 #else
-    cudaSafeCall( cudaHostUnregister(m.data) );
+    cudaSafeCall( hipHostUnregister(m.data) );
 #endif
 }

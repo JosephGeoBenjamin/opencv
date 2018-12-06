@@ -26,7 +26,7 @@
 
 #if defined CV_ENABLE_INTRINSICS \
     && !defined CV_DISABLE_OPTIMIZATION \
-    && !defined __CUDACC__ /* do not include SSE/AVX/NEON headers for NVCC compiler */ \
+    && !defined __HIPCC__ /* do not include SSE/AVX/NEON headers for NVCC compiler */ \
 
 #ifdef CV_CPU_COMPILE_SSE2
 #  include <emmintrin.h>
@@ -115,7 +115,7 @@
 #  define CV_VSX 1
 #endif
 
-#endif // CV_ENABLE_INTRINSICS && !CV_DISABLE_OPTIMIZATION && !__CUDACC__
+#endif // CV_ENABLE_INTRINSICS && !CV_DISABLE_OPTIMIZATION && !__HIPCC__
 
 #if defined CV_CPU_COMPILE_AVX && !defined CV_CPU_BASELINE_COMPILE_AVX
 struct VZeroUpperGuard {
@@ -138,7 +138,7 @@ struct VZeroUpperGuard {
 
 
 #if !defined __OPENCV_BUILD /* Compatibility code */ \
-    && !defined __CUDACC__ /* do not include SSE/AVX/NEON headers for NVCC compiler */
+    && !defined __HIPCC__ /* do not include SSE/AVX/NEON headers for NVCC compiler */
 #if defined __SSE2__ || defined _M_X64 || (defined _M_IX86_FP && _M_IX86_FP >= 2)
 #  include <emmintrin.h>
 #  define CV_MMX 1
