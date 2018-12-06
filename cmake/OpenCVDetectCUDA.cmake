@@ -27,7 +27,6 @@ else()
 endif()
 
 if(HIP_FOUND)
-  set(HAVE_HIP 1) # MCW-TODO: Replace with HAVE_HIP across all files 
   set(HAVE_HIP 1) 
 
   if(WITH_CUFFT)
@@ -38,7 +37,7 @@ if(HIP_FOUND)
     set(HAVE_CUBLAS 1)
   endif()
 
-  # MCW-TODO: remove below lines or change to HIP equvalent once available
+  # HIP_TODO: remove below lines or change to HIP equvalent once available
   # if(WITH_NVCUVID)
   #   find_cuda_helper_libs(nvcuvid)
   #   if(WIN32)
@@ -270,7 +269,7 @@ if(HIP_FOUND)
     endif()
 
     HIP_COMPILE(${VAR} ${ARGN})
-    # TODO-MCW : Avoid explicit setting of include and links
+    # HIP_TODO : Avoid explicit setting of include and links
     INCLUDE_DIRECTORIES("/opt/rocm/hip/include/" "/usr/local/cuda/include/")
     LINK_DIRECTORIES("/opt/rocm/hip/lib/" "/usr/local/cuda/lib64/")
 
