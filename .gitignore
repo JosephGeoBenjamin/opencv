@@ -22,4 +22,5 @@ bin/
 *.log
 *.tlog
 build
+log
 *.prehip

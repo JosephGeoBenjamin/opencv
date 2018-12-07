@@ -48,7 +48,7 @@
 #include "opencv2/core/cvdef.h"
 
 #if ((defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __x86_64__ \
-    && defined __SSE2__ && !defined __APPLE__)) && !defined(__CUDACC__)
+    && defined __SSE2__ && !defined __APPLE__)) && !defined(__HIPCC__)
 #include <emmintrin.h>
 #endif
 
@@ -70,7 +70,7 @@
 #  endif
 #endif
 
-#if defined __GNUC__ && defined __arm__ && (defined __ARM_PCS_VFP || defined __ARM_VFPV3__ || defined __ARM_NEON__) && !defined __SOFTFP__ && !defined(__CUDACC__)
+#if defined __GNUC__ && defined __arm__ && (defined __ARM_PCS_VFP || defined __ARM_VFPV3__ || defined __ARM_NEON__) && !defined __SOFTFP__ && !defined(__HIPCC__)
     // 1. general scheme
     #define ARM_ROUND(_value, _asm_string) \
         int res; \
@@ -97,7 +97,7 @@ CV_INLINE int
 cvRound( double value )
 {
 #if ((defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __x86_64__ \
-    && defined __SSE2__ && !defined __APPLE__) || CV_SSE2) && !defined(__CUDACC__)
+    && defined __SSE2__ && !defined __APPLE__) || CV_SSE2) && !defined(__HIPCC__)
     __m128d t = _mm_set_sd( value );
     return _mm_cvtsd_si32(t);
 #elif defined _MSC_VER && defined _M_IX86
@@ -182,7 +182,7 @@ CV_INLINE int cvIsInf( double value )
 CV_INLINE int cvRound(float value)
 {
 #if ((defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __x86_64__ \
-    && defined __SSE2__ && !defined __APPLE__) || CV_SSE2) && !defined(__CUDACC__)
+    && defined __SSE2__ && !defined __APPLE__) || CV_SSE2) && !defined(__HIPCC__)
     __m128 t = _mm_set_ss( value );
     return _mm_cvtss_si32(t);
 #elif defined _MSC_VER && defined _M_IX86

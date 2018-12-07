@@ -39,7 +39,7 @@
 // the use of this software, even if advised of the possibility of such damage.
 //
 //M*/
-
+#include"hip/hip_runtime.h"
 #ifndef OPENCV_CORE_CUDA_TYPES_HPP
 #define OPENCV_CORE_CUDA_TYPES_HPP
 
@@ -60,7 +60,7 @@
 
 //! @cond IGNORED
 
-#ifdef __CUDACC__
+#ifdef __HIPCC__
     #define __CV_CUDA_HOST_DEVICE__ __host__ __device__ __forceinline__
 #else
     #define __CV_CUDA_HOST_DEVICE__

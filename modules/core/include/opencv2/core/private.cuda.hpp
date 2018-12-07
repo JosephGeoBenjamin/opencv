@@ -57,28 +57,35 @@
 
 #ifdef HAVE_HIP
 #  include <cuda.h>
-#  include <cuda_runtime.h>
+#  include <hip/hip_runtime.h>
 #  if defined(__CUDACC_VER_MAJOR__) && (8 <= __CUDACC_VER_MAJOR__)
-#    if defined (__GNUC__) && !defined(__CUDACC__)
+#    if defined (__GNUC__) && !defined(__HIPCC__)
 #     pragma GCC diagnostic push
 #     pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#     include <cuda_fp16.h>
+#     include <hip/hip_fp16.h>
 #     pragma GCC diagnostic pop
 #    else
 #     include <cuda_fp16.h>
 #    endif
 #  endif // defined(__CUDACC_VER_MAJOR__) && (8 <= __CUDACC_VER_MAJOR__)
+
+#ifdef NPP_ENABLE
 #  include <npp.h>
+#endif //NPP_ENABLE
 #  include "opencv2/core/cuda_stream_accessor.hpp"
 #  include "opencv2/core/cuda/common.hpp"
 
+#ifdef NPP_ENABLE
 #  define NPP_VERSION (NPP_VERSION_MAJOR * 1000 + NPP_VERSION_MINOR * 100 + NPP_VERSION_BUILD)
+#endif //NPP_ENABLE
 
 #  define CUDART_MINIMUM_REQUIRED_VERSION 6050
 
+#ifdef __HIP_PLATFORM_NVCC__
 #  if (CUDART_VERSION < CUDART_MINIMUM_REQUIRED_VERSION)
 #    error "Insufficient Cuda Runtime library version, please update it."
 #  endif
+#endif
 
 #  if defined(CUDA_ARCH_BIN_OR_PTX_10)
 #    error "OpenCV CUDA module doesn't support NVIDIA compute capability 1.0"
@@ -108,59 +115,65 @@ static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::GpuNotSuppo
 
 #else // HAVE_HIP
 
-#define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { cudaStreamSynchronize(oldStream); nppSetStream(newStream); } }
+#ifdef NPP_ENABLE
+#define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { hipStreamSynchronize(oldStream); nppSetStream(newStream); } }
+#endif //NPP_ENABLE
 
 static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::StsNotImplemented, "The called functionality is disabled for current build or platform"); }
 
 namespace cv { namespace cuda
 {
-    static inline void checkNppError(int code, const char* file, const int line, const char* func)
-    {
-        if (code < 0)
-            cv::error(cv::Error::GpuApiCallError, getNppErrorMessage(code), func, file, line);
-    }
+	#ifdef NPP_ENABLE
+	static inline void checkNppError(int code, const char* file, const int line, const char* func)
+	{
+		if (code < 0)
+			cv::error(cv::Error::GpuApiCallError, getNppErrorMessage(code), func, file, line);
+	}
 
-    static inline void checkCudaDriverApiError(int code, const char* file, const int line, const char* func)
-    {
-        if (code != CUDA_SUCCESS)
-            cv::error(cv::Error::GpuApiCallError, getCudaDriverApiErrorMessage(code), func, file, line);
-    }
+	static inline void checkCudaDriverApiError(int code, const char* file, const int line, const char* func)
+	{
+		if (code != CUDA_SUCCESS)
+			cv::error(cv::Error::GpuApiCallError, getCudaDriverApiErrorMessage(code), func, file, line);
+	}
 
-    template<int n> struct NPPTypeTraits;
-    template<> struct NPPTypeTraits<CV_8U>  { typedef Npp8u npp_type; };
-    template<> struct NPPTypeTraits<CV_8S>  { typedef Npp8s npp_type; };
-    template<> struct NPPTypeTraits<CV_16U> { typedef Npp16u npp_type; };
-    template<> struct NPPTypeTraits<CV_16S> { typedef Npp16s npp_type; };
-    template<> struct NPPTypeTraits<CV_32S> { typedef Npp32s npp_type; };
-    template<> struct NPPTypeTraits<CV_32F> { typedef Npp32f npp_type; };
-    template<> struct NPPTypeTraits<CV_64F> { typedef Npp64f npp_type; };
+	template<int n> struct NPPTypeTraits;
+	template<> struct NPPTypeTraits<CV_8U>  { typedef Npp8u npp_type; };
+	template<> struct NPPTypeTraits<CV_8S>  { typedef Npp8s npp_type; };
+	template<> struct NPPTypeTraits<CV_16U> { typedef Npp16u npp_type; };
+	template<> struct NPPTypeTraits<CV_16S> { typedef Npp16s npp_type; };
+	template<> struct NPPTypeTraits<CV_32S> { typedef Npp32s npp_type; };
+	template<> struct NPPTypeTraits<CV_32F> { typedef Npp32f npp_type; };
+	template<> struct NPPTypeTraits<CV_64F> { typedef Npp64f npp_type; };
 
-    class NppStreamHandler
-    {
-    public:
-        inline explicit NppStreamHandler(Stream& newStream)
-        {
-            oldStream = nppGetStream();
-            nppSafeSetStream(oldStream, StreamAccessor::getStream(newStream));
-        }
+	class NppStreamHandler
+	{
+	public:
+		inline explicit NppStreamHandler(Stream& newStream)
+		{
+			oldStream = nppGetStream();
+			nppSafeSetStream(oldStream, StreamAccessor::getStream(newStream));
+		}
 
-        inline explicit NppStreamHandler(cudaStream_t newStream)
-        {
-            oldStream = nppGetStream();
-            nppSafeSetStream(oldStream, newStream);
-        }
+		inline explicit NppStreamHandler(hipStream_t newStream)
+		{
+			oldStream = nppGetStream();
+			nppSafeSetStream(oldStream, newStream);
+		}
 
-        inline ~NppStreamHandler()
-        {
-            nppSafeSetStream(nppGetStream(), oldStream);
-        }
+		inline ~NppStreamHandler()
+		{
+			nppSafeSetStream(nppGetStream(), oldStream);
+		}
 
-    private:
-        cudaStream_t oldStream;
-    };
+	private:
+		hipStream_t oldStream;
+	};
+	#endif //NPP_ENABLE
 }}
 
+#ifdef NPP_ENABLE
 #define nppSafeCall(expr)  cv::cuda::checkNppError(expr, __FILE__, __LINE__, CV_Func)
+#endif //NPP_ENABLE
 #define cuSafeCall(expr)  cv::cuda::checkCudaDriverApiError(expr, __FILE__, __LINE__, CV_Func)
 
 #endif // HAVE_HIP

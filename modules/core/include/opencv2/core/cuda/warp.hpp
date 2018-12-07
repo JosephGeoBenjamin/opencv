@@ -63,8 +63,12 @@ namespace cv { namespace cuda { namespace device
         /** \brief Returns the warp lane ID of the calling thread. */
         static __device__ __forceinline__ unsigned int laneId()
         {
-            unsigned int ret;
+            unsigned int ret =0;
+#ifdef __HIP_PLATFORM_NVCC__
             asm("mov.u32 %0, %%laneid;" : "=r"(ret) );
+#else
+             //HIP_TODO
+#endif
             return ret;
         }
 

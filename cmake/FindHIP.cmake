@@ -1,4 +1,3 @@
-
 ###############################################################################
 # FindHIP.cmake
 ###############################################################################
@@ -559,6 +558,7 @@ macro(HIP_ADD_EXECUTABLE hip_target)
         set(HCC_HOME "/opt/rocm/hcc")
     endif()
     set(CMAKE_HIP_LINK_EXECUTABLE "${HIP_HIPCC_CMAKE_LINKER_HELPER} ${HCC_HOME} <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    MESSAGE(${_sources})
     add_executable(${hip_target} ${_cmake_options} ${_generated_files} ${_sources})
     set_target_properties(${hip_target} PROPERTIES LINKER_LANGUAGE HIP)
 endmacro()
@@ -577,13 +577,15 @@ macro(HIP_ADD_LIBRARY hip_target)
     set_target_properties(${hip_target} PROPERTIES LINKER_LANGUAGE ${HIP_C_OR_CXX})
 endmacro()
 
+
 ###############################################################################
 ###############################################################################
 # (Internal) helper for manually added hip source files with specific targets
 ###############################################################################
 ###############################################################################
 macro(hip_compile_base hip_target format generated_files)
-   # Separate the sources from the options
+
+  # Separate the sources from the options
   HIP_GET_SOURCES_AND_OPTIONS(_sources _cmake_options _hipcc_options _hcc_options _nvcc_options ${ARGN})
   HIP_PREPARE_TARGET_COMMANDS(${hip_target} OBJ _generated_files _source_files ${_sources} ${_cmake_options} HIPCC_OPTIONS ${_hipcc_options} HCC_OPTIONS ${_hcc_options} NVCC_OPTIONS ${_nvcc_options})
   if(_source_files)
@@ -591,8 +593,10 @@ macro(hip_compile_base hip_target format generated_files)
   endif()
  
   set( ${generated_files} ${_generated_files})
- endmacro()
- ###############################################################################
+
+endmacro()
+
+###############################################################################
 ###############################################################################
 # HIP COMPILE
 ###############################################################################
@@ -600,4 +604,6 @@ macro(hip_compile_base hip_target format generated_files)
 macro(HIP_COMPILE generated_files)
   hip_compile_base(hip_compile OBJ ${generated_files} ${ARGN})
 endmacro()
+
+
 # vim: ts=4:sw=4:expandtab:smartindent

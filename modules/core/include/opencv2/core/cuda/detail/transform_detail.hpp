@@ -1,3 +1,4 @@
+#include "hip/hip_runtime.h"
 /*M///////////////////////////////////////////////////////////////////////////////////////
 //
 //  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
@@ -211,8 +212,8 @@ namespace cv { namespace cuda { namespace device
             typedef typename UnaryReadWriteTraits<T, D, ft::smart_shift>::read_type read_type;
             typedef typename UnaryReadWriteTraits<T, D, ft::smart_shift>::write_type write_type;
 
-            const int x = threadIdx.x + blockIdx.x * blockDim.x;
-            const int y = threadIdx.y + blockIdx.y * blockDim.y;
+            const int x = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x;
+            const int y = hipThreadIdx_y + hipBlockIdx_y * hipBlockDim_y;
             const int x_shifted = x * ft::smart_shift;
 
             if (y < src_.rows)
@@ -239,8 +240,8 @@ namespace cv { namespace cuda { namespace device
         template <typename T, typename D, typename UnOp, typename Mask>
         __global__ static void transformSimple(const PtrStepSz<T> src, PtrStep<D> dst, const Mask mask, const UnOp op)
         {
-            const int x = blockDim.x * blockIdx.x + threadIdx.x;
-            const int y = blockDim.y * blockIdx.y + threadIdx.y;
+            const int x = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x;
+            const int y = hipBlockDim_y * hipBlockIdx_y + hipThreadIdx_y;
 
             if (x < src.cols && y < src.rows && mask(y, x))
             {
@@ -257,8 +258,8 @@ namespace cv { namespace cuda { namespace device
             typedef typename BinaryReadWriteTraits<T1, T2, D, ft::smart_shift>::read_type2 read_type2;
             typedef typename BinaryReadWriteTraits<T1, T2, D, ft::smart_shift>::write_type write_type;
 
-            const int x = threadIdx.x + blockIdx.x * blockDim.x;
-            const int y = threadIdx.y + blockIdx.y * blockDim.y;
+            const int x = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x;
+            const int y = hipThreadIdx_y + hipBlockIdx_y * hipBlockDim_y;
             const int x_shifted = x * ft::smart_shift;
 
             if (y < src1_.rows)
@@ -289,8 +290,8 @@ namespace cv { namespace cuda { namespace device
         static __global__ void transformSimple(const PtrStepSz<T1> src1, const PtrStep<T2> src2, PtrStep<D> dst,
             const Mask mask, const BinOp op)
         {
-            const int x = blockDim.x * blockIdx.x + threadIdx.x;
-            const int y = blockDim.y * blockIdx.y + threadIdx.y;
+            const int x = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x;
+            const int y = hipBlockDim_y * hipBlockIdx_y + hipThreadIdx_y;
 
             if (x < src1.cols && y < src1.rows && mask(y, x))
             {
@@ -304,39 +305,39 @@ namespace cv { namespace cuda { namespace device
         template<> struct TransformDispatcher<false>
         {
             template <typename T, typename D, typename UnOp, typename Mask>
-            static void call(PtrStepSz<T> src, PtrStepSz<D> dst, UnOp op, Mask mask, cudaStream_t stream)
+            static void call(PtrStepSz<T> src, PtrStepSz<D> dst, UnOp op, Mask mask, hipStream_t stream)
             {
                 typedef TransformFunctorTraits<UnOp> ft;
 
                 const dim3 threads(ft::simple_block_dim_x, ft::simple_block_dim_y, 1);
                 const dim3 grid(divUp(src.cols, threads.x), divUp(src.rows, threads.y), 1);
 
-                transformSimple<T, D><<<grid, threads, 0, stream>>>(src, dst, mask, op);
-                cudaSafeCall( cudaGetLastError() );
+                hipLaunchKernelGGL((transformSimple<T, D, UnOp, Mask>), dim3(grid), dim3(threads), 0, stream, src, dst, mask, op);
+                cudaSafeCall( hipGetLastError() );
 
                 if (stream == 0)
-                    cudaSafeCall( cudaDeviceSynchronize() );
+                    cudaSafeCall( hipDeviceSynchronize() );
             }
 
             template <typename T1, typename T2, typename D, typename BinOp, typename Mask>
-            static void call(PtrStepSz<T1> src1, PtrStepSz<T2> src2, PtrStepSz<D> dst, BinOp op, Mask mask, cudaStream_t stream)
+            static void call(PtrStepSz<T1> src1, PtrStepSz<T2> src2, PtrStepSz<D> dst, BinOp op, Mask mask, hipStream_t stream)
             {
                 typedef TransformFunctorTraits<BinOp> ft;
 
                 const dim3 threads(ft::simple_block_dim_x, ft::simple_block_dim_y, 1);
                 const dim3 grid(divUp(src1.cols, threads.x), divUp(src1.rows, threads.y), 1);
 
-                transformSimple<T1, T2, D><<<grid, threads, 0, stream>>>(src1, src2, dst, mask, op);
-                cudaSafeCall( cudaGetLastError() );
+                hipLaunchKernelGGL((transformSimple<T1, T2, D, BinOp, Mask>), dim3(grid), dim3(threads), 0, stream, src1, src2, dst, mask, op);
+                cudaSafeCall( hipGetLastError() );
 
                 if (stream == 0)
-                    cudaSafeCall( cudaDeviceSynchronize() );
+                    cudaSafeCall( hipDeviceSynchronize() );
             }
         };
         template<> struct TransformDispatcher<true>
         {
             template <typename T, typename D, typename UnOp, typename Mask>
-            static void call(PtrStepSz<T> src, PtrStepSz<D> dst, UnOp op, Mask mask, cudaStream_t stream)
+            static void call(PtrStepSz<T> src, PtrStepSz<D> dst, UnOp op, Mask mask, hipStream_t stream)
             {
                 typedef TransformFunctorTraits<UnOp> ft;
 
@@ -352,15 +353,15 @@ namespace cv { namespace cuda { namespace device
                 const dim3 threads(ft::smart_block_dim_x, ft::smart_block_dim_y, 1);
                 const dim3 grid(divUp(src.cols, threads.x * ft::smart_shift), divUp(src.rows, threads.y), 1);
 
-                transformSmart<T, D><<<grid, threads, 0, stream>>>(src, dst, mask, op);
-                cudaSafeCall( cudaGetLastError() );
+                hipLaunchKernelGGL((transformSmart<T, D, UnOp, Mask>), dim3(grid), dim3(threads), 0, stream, src, dst, mask, op);
+                cudaSafeCall( hipGetLastError() );
 
                 if (stream == 0)
-                    cudaSafeCall( cudaDeviceSynchronize() );
+                    cudaSafeCall( hipDeviceSynchronize() );
             }
 
             template <typename T1, typename T2, typename D, typename BinOp, typename Mask>
-            static void call(PtrStepSz<T1> src1, PtrStepSz<T2> src2, PtrStepSz<D> dst, BinOp op, Mask mask, cudaStream_t stream)
+            static void call(PtrStepSz<T1> src1, PtrStepSz<T2> src2, PtrStepSz<D> dst, BinOp op, Mask mask, hipStream_t stream)
             {
                 typedef TransformFunctorTraits<BinOp> ft;
 
@@ -377,11 +378,11 @@ namespace cv { namespace cuda { namespace device
                 const dim3 threads(ft::smart_block_dim_x, ft::smart_block_dim_y, 1);
                 const dim3 grid(divUp(src1.cols, threads.x * ft::smart_shift), divUp(src1.rows, threads.y), 1);
 
-                transformSmart<T1, T2, D><<<grid, threads, 0, stream>>>(src1, src2, dst, mask, op);
-                cudaSafeCall( cudaGetLastError() );
+                hipLaunchKernelGGL(transformSmart<T1, T2, D, BinOp, Mask>, dim3(grid), dim3(threads), 0, stream, src1, src2, dst, mask, op);
+                cudaSafeCall( hipGetLastError() );
 
                 if (stream == 0)
-                    cudaSafeCall( cudaDeviceSynchronize() );
+                    cudaSafeCall( hipDeviceSynchronize() );
             }
         };
     } // namespace transform_detail

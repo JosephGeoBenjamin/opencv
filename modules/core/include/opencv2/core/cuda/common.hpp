@@ -43,7 +43,7 @@
 #ifndef OPENCV_CUDA_COMMON_HPP
 #define OPENCV_CUDA_COMMON_HPP
 
-#include <cuda_runtime.h>
+#include <hip/hip_runtime.h>
 #include "opencv2/core/cuda_types.hpp"
 #include "opencv2/core/cvdef.h"
 #include "opencv2/core/base.hpp"
@@ -63,10 +63,10 @@
 #endif
 
 namespace cv { namespace cuda {
-    static inline void checkCudaError(cudaError_t err, const char* file, const int line, const char* func)
+    static inline void checkCudaError(hipError_t err, const char* file, const int line, const char* func)
     {
-        if (cudaSuccess != err)
-            cv::error(cv::Error::GpuApiCallError, cudaGetErrorString(err), func, file, line);
+        if (hipSuccess != err)
+            cv::error(cv::Error::GpuApiCallError, hipGetErrorString(err), func, file, line);
     }
 }}
 
@@ -98,8 +98,8 @@ namespace cv { namespace cuda
 
         template<class T> inline void bindTexture(const textureReference* tex, const PtrStepSz<T>& img)
         {
-            cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
-            cudaSafeCall( cudaBindTexture2D(0, tex, img.ptr(), &desc, img.cols, img.rows, img.step) );
+            hipChannelFormatDesc desc = hipCreateChannelDesc<T>();
+            cudaSafeCall( hipBindTexture2D(0, const_cast<textureReference*>(tex), img.ptr(), &desc, img.cols, img.rows, img.step) );
         }
     }
 }}
