@@ -53,7 +53,7 @@ int cv::cuda::getCudaEnabledDeviceCount()
     int count;
     hipError_t error = hipGetDeviceCount(&count);
 
-    if (error == cudaErrorInsufficientDriver)
+    if (error == hipErrorInsufficientDriver)
         return -1;
 
     if (error == hipErrorNoDevice)
@@ -908,7 +908,7 @@ void cv::cuda::printCudaDeviceInfo(int device)
 
     int driverVersion = 0, runtimeVersion = 0;
     cudaSafeCall( hipDriverGetVersion(&driverVersion) );
-    cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
+    cudaSafeCall( hipRuntimeGetVersion(&runtimeVersion) );
 
     const char *computeMode[] = {
         "Default (multiple host threads can use ::hipSetDevice() with device simultaneously)",
@@ -991,7 +991,7 @@ void cv::cuda::printShortCudaDeviceInfo(int device)
 
     int driverVersion = 0, runtimeVersion = 0;
     cudaSafeCall( hipDriverGetVersion(&driverVersion) );
-    cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
+    cudaSafeCall( hipRuntimeGetVersion(&runtimeVersion) );
 
     for(int dev = beg; dev < end; ++dev)
     {

@@ -233,7 +233,7 @@ void cv::cuda::GpuMat::upload(InputArray arr, Stream& _stream)
     create(mat.size(), mat.type());
 
     hipStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(data, step, mat.data, mat.step, cols * elemSize(), rows, hipMemcpyHostToDevice, stream) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2DAsync(data, step, mat.data, mat.step, cols * elemSize(), rows, hipMemcpyHostToDevice, stream) );
 }
 
 /////////////////////////////////////////////////////
@@ -257,7 +257,7 @@ void cv::cuda::GpuMat::download(OutputArray _dst, Stream& _stream) const
     Mat dst = _dst.getMat();
 
     hipStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToHost, stream) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToHost, stream) );
 }
 
 /////////////////////////////////////////////////////
@@ -281,7 +281,7 @@ void cv::cuda::GpuMat::copyTo(OutputArray _dst, Stream& _stream) const
     GpuMat dst = _dst.getGpuMat();
 
     hipStream_t stream = StreamAccessor::getStream(_stream);
-    CV_CUDEV_SAFE_CALL( cudaMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToDevice, stream) );
+    CV_CUDEV_SAFE_CALL( hipMemcpy2DAsync(dst.data, dst.step, data, step, cols * elemSize(), rows, hipMemcpyDeviceToDevice, stream) );
 }
 
 namespace
@@ -384,9 +384,9 @@ GpuMat& cv::cuda::GpuMat::setTo(Scalar value, Stream& stream)
         // Zero fill
 
         if (stream)
-            CV_CUDEV_SAFE_CALL( cudaMemset2DAsync(data, step, 0, cols * elemSize(), rows, StreamAccessor::getStream(stream)) );
+            CV_CUDEV_SAFE_CALL( hipMemset2DAsync(data, step, 0, cols * elemSize(), rows, StreamAccessor::getStream(stream)) );
         else
-            CV_CUDEV_SAFE_CALL( cudaMemset2D(data, step, 0, cols * elemSize(), rows) );
+            CV_CUDEV_SAFE_CALL( hipMemset2D(data, step, 0, cols * elemSize(), rows) );
 
         return *this;
     }
@@ -403,9 +403,9 @@ GpuMat& cv::cuda::GpuMat::setTo(Scalar value, Stream& stream)
             const int val = cv::saturate_cast<uchar>(value[0]);
 
             if (stream)
-                CV_CUDEV_SAFE_CALL( cudaMemset2DAsync(data, step, val, cols * elemSize(), rows, StreamAccessor::getStream(stream)) );
+                CV_CUDEV_SAFE_CALL( hipMemset2DAsync(data, step, val, cols * elemSize(), rows, StreamAccessor::getStream(stream)) );
             else
-                CV_CUDEV_SAFE_CALL( cudaMemset2D(data, step, val, cols * elemSize(), rows) );
+                CV_CUDEV_SAFE_CALL( hipMemset2D(data, step, val, cols * elemSize(), rows) );
 
             return *this;
         }
