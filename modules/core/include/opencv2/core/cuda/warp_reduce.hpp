@@ -52,7 +52,7 @@
 namespace cv { namespace cuda { namespace device
 {
     template <class T>
-    __device__ __forceinline__ T warp_reduce(volatile T *ptr , const unsigned int tid = threadIdx.x)
+    __device__ __forceinline__ T warp_reduce(volatile T *ptr , const unsigned int tid = hipThreadIdx_x)
     {
         const unsigned int lane = tid & 31; // index of thread in warp (0..31)
 
