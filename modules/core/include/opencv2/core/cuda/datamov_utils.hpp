@@ -72,7 +72,7 @@ namespace cv { namespace cuda { namespace device
         #endif
 
         template<class T> struct ForceGlob;
-
+#ifdef __HIP_PLATFORM_NVCC__
         #define OPENCV_CUDA_DEFINE_FORCE_GLOB(base_type, ptx_type, reg_mod) \
             template <> struct ForceGlob<base_type> \
             { \
@@ -100,6 +100,7 @@ namespace cv { namespace cuda { namespace device
             OPENCV_CUDA_DEFINE_FORCE_GLOB  (int,    s32, r)
             OPENCV_CUDA_DEFINE_FORCE_GLOB  (float,  f32, f)
             OPENCV_CUDA_DEFINE_FORCE_GLOB  (double, f64, d)
+#endif //__HIP_PLATFORM_NVCC__
 
         #undef OPENCV_CUDA_DEFINE_FORCE_GLOB
         #undef OPENCV_CUDA_DEFINE_FORCE_GLOB_B

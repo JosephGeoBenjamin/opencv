@@ -62,6 +62,7 @@ namespace cv { namespace cuda { namespace device
     template<typename _Tp> __device__ __forceinline__ _Tp saturate_cast(float v) { return _Tp(v); }
     template<typename _Tp> __device__ __forceinline__ _Tp saturate_cast(double v) { return _Tp(v); }
 
+#ifdef __HIP_PLATFORM_NVCC__
     template<> __device__ __forceinline__ uchar saturate_cast<uchar>(schar v)
     {
         uint res = 0;
@@ -273,6 +274,7 @@ namespace cv { namespace cuda { namespace device
         asm("cvt.sat.u32.s32 %0, %1;" : "=r"(res) : "r"(v));
         return res;
     }
+#endif
     template<> __device__ __forceinline__ uint saturate_cast<uint>(float v)
     {
         return __float2uint_rn(v);
