@@ -147,6 +147,7 @@ namespace
 
     bool DefaultAllocator::allocate(GpuMat* mat, int rows, int cols, size_t elemSize)
     {
+#ifdef __HIP_PLATFORM_NVCC__
         if (rows > 1 && cols > 1)
         {
             CV_CUDEV_SAFE_CALL( hipMallocPitch(&mat->data, &mat->step, elemSize * cols, rows) );
@@ -157,6 +158,11 @@ namespace
             CV_CUDEV_SAFE_CALL( hipMalloc(&mat->data, elemSize * cols * rows) );
             mat->step = elemSize * cols;
         }
+#elif defined __HIP_PLATFORM_HCC__
+      // Single row or single column must be continuous
+        CV_CUDEV_SAFE_CALL( hipMalloc(&mat->data, elemSize * cols * rows) );
+        mat->step = elemSize * cols;
+#endif
 
         mat->refcount = (int*) fastMalloc(sizeof(int));
 
