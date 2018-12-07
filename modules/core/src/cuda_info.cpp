@@ -53,7 +53,7 @@ int cv::cuda::getCudaEnabledDeviceCount()
     int count;
     hipError_t error = hipGetDeviceCount(&count);
 
-    if (error == cudaErrorInsufficientDriver)
+    if (error == hipErrorInsufficientDriver)
         return -1;
 
     if (error == hipErrorNoDevice)
@@ -388,7 +388,11 @@ size_t cv::cuda::DeviceInfo::memPitch() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->memPitch;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -460,7 +464,11 @@ size_t cv::cuda::DeviceInfo::textureAlignment() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->textureAlignment;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -469,7 +477,11 @@ size_t cv::cuda::DeviceInfo::texturePitchAlignment() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->texturePitchAlignment;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -487,7 +499,11 @@ bool cv::cuda::DeviceInfo::kernelExecTimeoutEnabled() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->kernelExecTimeoutEnabled != 0;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -531,7 +547,11 @@ int cv::cuda::DeviceInfo::maxTexture1D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->maxTexture1D;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -541,7 +561,11 @@ int cv::cuda::DeviceInfo::maxTexture1DMipmap() const
     throw_no_cuda();
 #else
     #if CUDA_VERSION >= 5000
+#ifdef HIP_TO_DO
         return deviceProps().get(device_id_)->maxTexture1DMipmap;
+#else
+    return 0;
+#endif
     #else
         CV_Error(Error::StsNotImplemented, "This function requires CUDA 5.0");
         return 0;
@@ -554,7 +578,11 @@ int cv::cuda::DeviceInfo::maxTexture1DLinear() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->maxTexture1DLinear;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -563,7 +591,11 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxTexture2D);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -573,7 +605,11 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2DMipmap() const
     throw_no_cuda();
 #else
     #if CUDA_VERSION >= 5000
+#ifdef HIP_TO_DO
         return Vec2i(deviceProps().get(device_id_)->maxTexture2DMipmap);
+#else
+    return Vec2i(0);
+#endif
     #else
         CV_Error(Error::StsNotImplemented, "This function requires CUDA 5.0");
         return Vec2i();
@@ -586,7 +622,11 @@ Vec3i cv::cuda::DeviceInfo::maxTexture2DLinear() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec3i(deviceProps().get(device_id_)->maxTexture2DLinear);
+#else
+    return Vec3i(0);
+#endif
 #endif
 }
 
@@ -595,7 +635,11 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2DGather() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxTexture2DGather);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -604,7 +648,11 @@ Vec3i cv::cuda::DeviceInfo::maxTexture3D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec3i(deviceProps().get(device_id_)->maxTexture3D);
+#else
+    return Vec3i(0);
+#endif
 #endif
 }
 
@@ -613,7 +661,11 @@ int cv::cuda::DeviceInfo::maxTextureCubemap() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->maxTextureCubemap;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -622,7 +674,11 @@ Vec2i cv::cuda::DeviceInfo::maxTexture1DLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxTexture1DLayered);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -631,7 +687,11 @@ Vec3i cv::cuda::DeviceInfo::maxTexture2DLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec3i(deviceProps().get(device_id_)->maxTexture2DLayered);
+#else
+    return Vec3i(0);
+#endif
 #endif
 }
 
@@ -640,7 +700,11 @@ Vec2i cv::cuda::DeviceInfo::maxTextureCubemapLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxTextureCubemapLayered);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -649,7 +713,11 @@ int cv::cuda::DeviceInfo::maxSurface1D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->maxSurface1D;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -658,7 +726,11 @@ Vec2i cv::cuda::DeviceInfo::maxSurface2D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxSurface2D);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -667,7 +739,11 @@ Vec3i cv::cuda::DeviceInfo::maxSurface3D() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec3i(deviceProps().get(device_id_)->maxSurface3D);
+#else
+    return Vec3i(0);
+#endif
 #endif
 }
 
@@ -676,7 +752,11 @@ Vec2i cv::cuda::DeviceInfo::maxSurface1DLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxSurface1DLayered);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -685,7 +765,11 @@ Vec3i cv::cuda::DeviceInfo::maxSurface2DLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec3i(deviceProps().get(device_id_)->maxSurface2DLayered);
+#else
+    return Vec3i(0);
+#endif
 #endif
 }
 
@@ -694,7 +778,11 @@ int cv::cuda::DeviceInfo::maxSurfaceCubemap() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->maxSurfaceCubemap;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -703,7 +791,11 @@ Vec2i cv::cuda::DeviceInfo::maxSurfaceCubemapLayered() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return Vec2i(deviceProps().get(device_id_)->maxSurfaceCubemapLayered);
+#else
+    return Vec2i(0);
+#endif
 #endif
 }
 
@@ -712,7 +804,11 @@ size_t cv::cuda::DeviceInfo::surfaceAlignment() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->surfaceAlignment;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -730,7 +826,11 @@ bool cv::cuda::DeviceInfo::ECCEnabled() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->ECCEnabled != 0;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -766,7 +866,11 @@ bool cv::cuda::DeviceInfo::tccDriver() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->tccDriver != 0;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -775,7 +879,11 @@ int cv::cuda::DeviceInfo::asyncEngineCount() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->asyncEngineCount;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -784,7 +892,11 @@ bool cv::cuda::DeviceInfo::unifiedAddressing() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
+#ifdef HIP_TO_DO
     return deviceProps().get(device_id_)->unifiedAddressing != 0;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -823,6 +935,7 @@ int cv::cuda::DeviceInfo::maxThreadsPerMultiProcessor() const
     return deviceProps().get(device_id_)->maxThreadsPerMultiProcessor;
 #endif
 }
+
 
 void cv::cuda::DeviceInfo::queryMemory(size_t& _totalMemory, size_t& _freeMemory) const
 {
@@ -908,7 +1021,7 @@ void cv::cuda::printCudaDeviceInfo(int device)
 
     int driverVersion = 0, runtimeVersion = 0;
     cudaSafeCall( hipDriverGetVersion(&driverVersion) );
-    cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
+    cudaSafeCall( hipRuntimeGetVersion(&runtimeVersion) );
 
     const char *computeMode[] = {
         "Default (multiple host threads can use ::hipSetDevice() with device simultaneously)",
@@ -935,12 +1048,14 @@ void cv::cuda::printCudaDeviceInfo(int device)
 
         printf("  GPU Clock Speed:                               %.2f GHz\n", prop.clockRate * 1e-6f);
 
+#ifdef HIP_TO_DO
         printf("  Max Texture Dimension Size (x,y,z)             1D=(%d), 2D=(%d,%d), 3D=(%d,%d,%d)\n",
             prop.maxTexture1D, prop.maxTexture2D[0], prop.maxTexture2D[1],
             prop.maxTexture3D[0], prop.maxTexture3D[1], prop.maxTexture3D[2]);
         printf("  Max Layered Texture Size (dim) x layers        1D=(%d) x %d, 2D=(%d,%d) x %d\n",
             prop.maxTexture1DLayered[0], prop.maxTexture1DLayered[1],
             prop.maxTexture2DLayered[0], prop.maxTexture2DLayered[1], prop.maxTexture2DLayered[2]);
+#endif
 
         printf("  Total amount of constant memory:               %u bytes\n", (int)prop.totalConstMem);
         printf("  Total amount of shared memory per block:       %u bytes\n", (int)prop.sharedMemPerBlock);
@@ -949,19 +1064,23 @@ void cv::cuda::printCudaDeviceInfo(int device)
         printf("  Maximum number of threads per block:           %d\n", prop.maxThreadsPerBlock);
         printf("  Maximum sizes of each dimension of a block:    %d x %d x %d\n", prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
         printf("  Maximum sizes of each dimension of a grid:     %d x %d x %d\n", prop.maxGridSize[0], prop.maxGridSize[1],  prop.maxGridSize[2]);
+#ifdef HIP_TO_DO
         printf("  Maximum memory pitch:                          %u bytes\n", (int)prop.memPitch);
         printf("  Texture alignment:                             %u bytes\n", (int)prop.textureAlignment);
 
         printf("  Concurrent copy and execution:                 %s with %d copy engine(s)\n", (prop.deviceOverlap ? "Yes" : "No"), prop.asyncEngineCount);
         printf("  Run time limit on kernels:                     %s\n", prop.kernelExecTimeoutEnabled ? "Yes" : "No");
+#endif
         printf("  Integrated GPU sharing Host Memory:            %s\n", prop.integrated ? "Yes" : "No");
         printf("  Support host page-locked memory mapping:       %s\n", prop.canMapHostMemory ? "Yes" : "No");
 
         printf("  Concurrent kernel execution:                   %s\n", prop.concurrentKernels ? "Yes" : "No");
+#ifdef HIP_TO_DO
         printf("  Alignment requirement for Surfaces:            %s\n", prop.surfaceAlignment ? "Yes" : "No");
         printf("  Device has ECC support enabled:                %s\n", prop.ECCEnabled ? "Yes" : "No");
         printf("  Device is using TCC driver mode:               %s\n", prop.tccDriver ? "Yes" : "No");
         printf("  Device supports Unified Addressing (UVA):      %s\n", prop.unifiedAddressing ? "Yes" : "No");
+#endif
         printf("  Device PCI Bus ID / PCI location ID:           %d / %d\n", prop.pciBusID, prop.pciDeviceID );
         printf("  Compute Mode:\n");
         printf("      %s \n", computeMode[prop.computeMode]);
@@ -991,7 +1110,7 @@ void cv::cuda::printShortCudaDeviceInfo(int device)
 
     int driverVersion = 0, runtimeVersion = 0;
     cudaSafeCall( hipDriverGetVersion(&driverVersion) );
-    cudaSafeCall( cudaRuntimeGetVersion(&runtimeVersion) );
+    cudaSafeCall( hipRuntimeGetVersion(&runtimeVersion) );
 
     for(int dev = beg; dev < end; ++dev)
     {
@@ -1035,6 +1154,7 @@ namespace
         bool operator()(const ErrorEntry& e) const { return e.code == code; }
     };
 
+#ifdef NPP_ENABLE
     const ErrorEntry npp_errors [] =
     {
     #if defined (_MSC_VER)
@@ -1124,58 +1244,70 @@ namespace
     };
 
     const size_t npp_error_num = sizeof(npp_errors) / sizeof(npp_errors[0]);
-
+#endif //NPP_ENABLE
+#ifdef __HIP_PLATFORM_HCC__
     const ErrorEntry cu_errors [] =
     {
-        error_entry( CUDA_SUCCESS                              ),
-        error_entry( CUDA_ERROR_INVALID_VALUE                  ),
-        error_entry( CUDA_ERROR_OUT_OF_MEMORY                  ),
-        error_entry( CUDA_ERROR_NOT_INITIALIZED                ),
-        error_entry( CUDA_ERROR_DEINITIALIZED                  ),
-        error_entry( CUDA_ERROR_PROFILER_DISABLED              ),
-        error_entry( CUDA_ERROR_PROFILER_NOT_INITIALIZED       ),
-        error_entry( CUDA_ERROR_PROFILER_ALREADY_STARTED       ),
-        error_entry( CUDA_ERROR_PROFILER_ALREADY_STOPPED       ),
-        error_entry( CUDA_ERROR_NO_DEVICE                      ),
-        error_entry( CUDA_ERROR_INVALID_DEVICE                 ),
-        error_entry( CUDA_ERROR_INVALID_IMAGE                  ),
-        error_entry( CUDA_ERROR_INVALID_CONTEXT                ),
-        error_entry( CUDA_ERROR_CONTEXT_ALREADY_CURRENT        ),
-        error_entry( CUDA_ERROR_MAP_FAILED                     ),
-        error_entry( CUDA_ERROR_UNMAP_FAILED                   ),
-        error_entry( CUDA_ERROR_ARRAY_IS_MAPPED                ),
-        error_entry( CUDA_ERROR_ALREADY_MAPPED                 ),
-        error_entry( CUDA_ERROR_NO_BINARY_FOR_GPU              ),
-        error_entry( CUDA_ERROR_ALREADY_ACQUIRED               ),
-        error_entry( CUDA_ERROR_NOT_MAPPED                     ),
-        error_entry( CUDA_ERROR_NOT_MAPPED_AS_ARRAY            ),
-        error_entry( CUDA_ERROR_NOT_MAPPED_AS_POINTER          ),
-        error_entry( CUDA_ERROR_ECC_UNCORRECTABLE              ),
-        error_entry( CUDA_ERROR_UNSUPPORTED_LIMIT              ),
-        error_entry( CUDA_ERROR_CONTEXT_ALREADY_IN_USE         ),
-        error_entry( CUDA_ERROR_INVALID_SOURCE                 ),
-        error_entry( CUDA_ERROR_FILE_NOT_FOUND                 ),
-        error_entry( CUDA_ERROR_SHARED_OBJECT_SYMBOL_NOT_FOUND ),
-        error_entry( CUDA_ERROR_SHARED_OBJECT_INIT_FAILED      ),
-        error_entry( CUDA_ERROR_OPERATING_SYSTEM               ),
-        error_entry( CUDA_ERROR_INVALID_HANDLE                 ),
-        error_entry( CUDA_ERROR_NOT_FOUND                      ),
-        error_entry( CUDA_ERROR_NOT_READY                      ),
-        error_entry( CUDA_ERROR_LAUNCH_FAILED                  ),
-        error_entry( CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES        ),
-        error_entry( CUDA_ERROR_LAUNCH_TIMEOUT                 ),
-        error_entry( CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING  ),
-        error_entry( CUDA_ERROR_PEER_ACCESS_ALREADY_ENABLED    ),
-        error_entry( CUDA_ERROR_PEER_ACCESS_NOT_ENABLED        ),
-        error_entry( CUDA_ERROR_PRIMARY_CONTEXT_ACTIVE         ),
-        error_entry( CUDA_ERROR_CONTEXT_IS_DESTROYED           ),
-        error_entry( CUDA_ERROR_ASSERT                         ),
-        error_entry( CUDA_ERROR_TOO_MANY_PEERS                 ),
-        error_entry( CUDA_ERROR_HOST_MEMORY_ALREADY_REGISTERED ),
-        error_entry( CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED     ),
-        error_entry( CUDA_ERROR_UNKNOWN                        )
+        error_entry( HIP_SUCCESS                              ),
+        error_entry( HIP_ERROR_INVALID_VALUE                  ),
+        error_entry( HIP_ERROR_LAUNCH_OUT_OF_RESOURCES        ),
+        error_entry( HIP_ERROR_NOT_INITIALIZED                )
     };
 
+#elif defined (__HIP_PLATFORM_NVCC__)
+   
+    const ErrorEntry cu_errors [] =
+    {
+        error_entry( HIP_SUCCESS                              ),
+        error_entry( HIP_ERROR_INVALID_VALUE                  ),
+        error_entry( HIP_ERROR_LAUNCH_OUT_OF_RESOURCES        ),
+        error_entry( HIP_ERROR_NOT_INITIALIZED                )
+        error_entry( HIP_ERROR_DEINITIALIZED                  ),
+        error_entry( HIP_ERROR_PROFILER_DISABLED              ),
+        error_entry( HIP_ERROR_PROFILER_NOT_INITIALIZED       ),
+        error_entry( HIP_ERROR_PROFILER_ALREADY_STARTED       ),
+        error_entry( HIP_ERROR_PROFILER_ALREADY_STOPPED       ),
+        error_entry( HIP_ERROR_NO_DEVICE                      ),
+        error_entry( HIP_ERROR_INVALID_DEVICE                 ),
+        error_entry( HIP_ERROR_INVALID_IMAGE                  ),
+        error_entry( HIP_ERROR_INVALID_CONTEXT                ),
+        error_entry( HIP_ERROR_CONTEXT_ALREADY_CURRENT        ),
+        error_entry( HIP_ERROR_MAP_FAILED                     ),
+        error_entry( HIP_ERROR_UNMAP_FAILED                   ),
+        error_entry( HIP_ERROR_ARRAY_IS_MAPPED                ),
+        error_entry( HIP_ERROR_ALREADY_MAPPED                 ),
+        error_entry( HIP_ERROR_NO_BINARY_FOR_GPU              ),
+        error_entry( HIP_ERROR_ALREADY_ACQUIRED               ),
+        error_entry( HIP_ERROR_NOT_MAPPED                     ),
+        error_entry( HIP_ERROR_NOT_MAPPED_AS_ARRAY            ),
+        error_entry( HIP_ERROR_NOT_MAPPED_AS_POINTER          ),
+        error_entry( HIP_ERROR_ECC_UNCORRECTABLE              ),
+        error_entry( HIP_ERROR_UNSUPPORTED_LIMIT              ),
+        error_entry( HIP_ERROR_CONTEXT_ALREADY_IN_USE         ),
+        error_entry( HIP_ERROR_INVALID_SOURCE                 ),
+        error_entry( HIP_ERROR_FILE_NOT_FOUND                 ),
+        error_entry( HIP_ERROR_SHARED_OBJECT_SYMBOL_NOT_FOUND ),
+        error_entry( HIP_ERROR_SHARED_OBJECT_INIT_FAILED      ),
+        error_entry( HIP_ERROR_OPERATING_SYSTEM               ),
+        error_entry( HIP_ERROR_INVALID_HANDLE                 ),
+        error_entry( HIP_ERROR_NOT_FOUND                      ),
+        error_entry( HIP_ERROR_NOT_READY                      ),
+        error_entry( HIP_ERROR_LAUNCH_FAILED                  ),
+        error_entry( HIP_ERROR_LAUNCH_OUT_OF_RESOURCES        ),
+        error_entry( HIP_ERROR_LAUNCH_TIMEOUT                 ),
+        error_entry( HIP_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING  ),
+        error_entry( HIP_ERROR_PEER_ACCESS_ALREADY_ENABLED    ),
+        error_entry( HIP_ERROR_PEER_ACCESS_NOT_ENABLED        ),
+        error_entry( HIP_ERROR_PRIMARY_CONTEXT_ACTIVE         ),
+        error_entry( HIP_ERROR_CONTEXT_IS_DESTROYED           ),
+        error_entry( HIP_ERROR_ASSERT                         ),
+        error_entry( HIP_ERROR_TOO_MANY_PEERS                 ),
+        error_entry( HIP_ERROR_HOST_MEMORY_ALREADY_REGISTERED ),
+        error_entry( HIP_ERROR_HOST_MEMORY_NOT_REGISTERED     ),
+        error_entry( HIP_ERROR_UNKNOWN                        )
+    };
+
+#endif
     const size_t cu_errors_num = sizeof(cu_errors) / sizeof(cu_errors[0]);
 
     cv::String getErrorString(int code, const ErrorEntry* errors, size_t n)
@@ -1191,6 +1323,7 @@ namespace
 
 #endif
 
+#ifdef NPP_ENABLE
 String cv::cuda::getNppErrorMessage(int code)
 {
 #ifndef HAVE_HIP
@@ -1200,6 +1333,7 @@ String cv::cuda::getNppErrorMessage(int code)
     return getErrorString(code, npp_errors, npp_error_num);
 #endif
 }
+#endif //NPP_ENABLE
 
 String cv::cuda::getCudaDriverApiErrorMessage(int code)
 {

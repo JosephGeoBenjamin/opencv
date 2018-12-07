@@ -54,8 +54,12 @@
 namespace cv { namespace cuda { namespace device
 {
     template<typename T, int N> struct TypeVec;
-
+    
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(8) uchar8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(8))) uchar8
+    #endif
     {
         uchar a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -64,7 +68,12 @@ namespace cv { namespace cuda { namespace device
         uchar8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(8) char8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(8))) char8
+    #endif
     {
         schar a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -73,7 +82,12 @@ namespace cv { namespace cuda { namespace device
         char8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(16) ushort8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(16))) ushort8
+    #endif
     {
         ushort a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -82,7 +96,12 @@ namespace cv { namespace cuda { namespace device
         ushort8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(16) short8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(16))) short8
+    #endif    
     {
         short a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -91,7 +110,12 @@ namespace cv { namespace cuda { namespace device
         short8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(32) uint8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(32))) uint8
+    #endif
     {
         uint a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -100,7 +124,12 @@ namespace cv { namespace cuda { namespace device
         uint8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(32) int8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(32))) int8
+    #endif
     {
         int a0, a1, a2, a3, a4, a5, a6, a7;
     };
@@ -109,7 +138,12 @@ namespace cv { namespace cuda { namespace device
         int8 val = {a0, a1, a2, a3, a4, a5, a6, a7};
         return val;
     }
+
+    #ifdef __HIP_PLATFORM_NVCC__
     struct __align__(32) float8
+    #elif defined (__HIP_PLATFORM_HCC__)
+    struct __attribute__((aligned(32))) float8
+    #endif
     {
         float a0, a1, a2, a3, a4, a5, a6, a7;
     };

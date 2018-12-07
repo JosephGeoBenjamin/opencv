@@ -99,7 +99,7 @@ namespace cv { namespace cuda { namespace device
 
         __device__ __forceinline__ T operator()( volatile T *ptr , const unsigned int idx)
         {
-            const unsigned int lane = threadIdx.x & 31;
+            const unsigned int lane = hipThreadIdx_x & 31;
             F op;
 
             ptr [idx ] = op(ptr [idx -  1], ptr [idx]);
@@ -121,7 +121,7 @@ namespace cv { namespace cuda { namespace device
 
         __device__ __forceinline__ void init(volatile T *ptr)
         {
-            ptr[threadIdx.x] = 0;
+            ptr[hipThreadIdx_x] = 0;
         }
 
         static const int warp_smem_stride = 32 + 16 + 1;
@@ -139,7 +139,7 @@ namespace cv { namespace cuda { namespace device
 
         __device__ __forceinline__ T operator()(volatile T *ptr)
         {
-            const unsigned int tid  = threadIdx.x;
+            const unsigned int tid  = hipThreadIdx_x;
             const unsigned int lane = tid & warp_mask;
             const unsigned int warp = tid >> warp_log;
 

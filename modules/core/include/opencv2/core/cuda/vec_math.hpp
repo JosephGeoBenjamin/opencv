@@ -400,7 +400,9 @@ CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, ushort, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, short, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, int, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, uint, uint)
+#ifdef __HIP_PLATFORM_NVCC__ // to avoid conflict with HIP vector types
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, float, float)
+#endif
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(+, double, double)
 
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(-, uchar, int)
@@ -418,7 +420,9 @@ CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, ushort, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, short, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, int, int)
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, uint, uint)
+#ifdef __HIP_PLATFORM_NVCC__ // to avoid conflict with HIP vector types
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, float, float)
+#endif
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(*, double, double)
 
 CV_CUDEV_IMPLEMENT_VEC_BINARY_OP(/, uchar, int)

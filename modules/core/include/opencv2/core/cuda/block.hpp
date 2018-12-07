@@ -55,12 +55,12 @@ namespace cv { namespace cuda { namespace device
     {
         static __device__ __forceinline__ unsigned int id()
         {
-            return blockIdx.x;
+            return hipBlockIdx_x;
         }
 
         static __device__ __forceinline__ unsigned int stride()
         {
-            return blockDim.x * blockDim.y * blockDim.z;
+            return hipBlockDim_x * hipBlockDim_y * hipBlockDim_z;
         }
 
         static __device__ __forceinline__ void sync()
@@ -70,7 +70,7 @@ namespace cv { namespace cuda { namespace device
 
         static __device__ __forceinline__ int flattenedThreadId()
         {
-            return threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+            return hipThreadIdx_z * hipBlockDim_x * hipBlockDim_y + hipThreadIdx_y * hipBlockDim_x + hipThreadIdx_x;
         }
 
         template<typename It, typename T>

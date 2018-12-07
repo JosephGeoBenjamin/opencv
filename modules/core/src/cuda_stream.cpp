@@ -455,7 +455,7 @@ bool cv::cuda::Stream::queryIfComplete() const
 #ifndef HAVE_HIP
     throw_no_cuda();
 #else
-    hipError_t err = cudaStreamQuery(impl_->stream);
+    hipError_t err = hipStreamQuery(impl_->stream);
 
     if (err == hipErrorNotReady || err == hipSuccess)
         return err == hipSuccess;
@@ -496,7 +496,7 @@ namespace
         CallbackData(Stream::StreamCallback callback_, void* userData_) : callback(callback_), userData(userData_) {}
     };
 
-    void CUDART_CB cudaStreamCallback(hipStream_t, hipError_t status, void* userData)
+    void CUDART_CB hipStreamCallback(hipStream_t, hipError_t status, void* userData)
     {
         CallbackData* data = reinterpret_cast<CallbackData*>(userData);
         data->callback(static_cast<int>(status), data->userData);
@@ -520,7 +520,7 @@ void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userDa
     #else
         CallbackData* data = new CallbackData(callback, userData);
 
-        cudaSafeCall( cudaStreamAddCallback(impl_->stream, cudaStreamCallback, data, 0) );
+        cudaSafeCall( hipStreamAddCallback(impl_->stream, hipStreamCallback, data, 0) );
     #endif
 #endif
 }

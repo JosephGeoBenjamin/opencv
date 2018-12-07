@@ -321,7 +321,7 @@ void cv::cuda::registerPageLocked(Mat& m)
     throw_no_cuda();
 #else
     CV_Assert( m.isContinuous() );
-    cudaSafeCall( hipHostRegister(m.data, m.step * m.rows, cudaHostRegisterPortable) );
+    cudaSafeCall( hipHostRegister(m.data, m.step * m.rows, hipHostRegisterPortable) );
 #endif
 }
 
