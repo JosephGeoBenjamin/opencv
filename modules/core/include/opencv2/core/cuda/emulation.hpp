@@ -64,7 +64,7 @@ namespace cv { namespace cuda { namespace device
                 // just campilation stab
                 return 0;
 #else
-                return __syncthreads_or(pred);
+                return syncthreadsOr(pred);
 #endif
         }
 
@@ -76,7 +76,7 @@ namespace cv { namespace cuda { namespace device
 #else
             __shared__ volatile int cta_buffer[CTA_SIZE];
 
-            int tid = threadIdx.x;
+            int tid = hipThreadIdx_x;
             cta_buffer[tid] = predicate ? (1 << (tid & 31)) : 0;
             return warp_reduce(cta_buffer);
 #endif
@@ -91,7 +91,7 @@ namespace cv { namespace cuda { namespace device
             {
 #if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
                 T count;
-                unsigned int tag = threadIdx.x << ( (sizeof(unsigned int) << 3) - 5U);
+                unsigned int tag = hipThreadIdx_x << ( (sizeof(unsigned int) << 3) - 5U);
                 do
                 {
                     count = *address & TAG_MASK;
@@ -110,7 +110,7 @@ namespace cv { namespace cuda { namespace device
             {
 #if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
                 T count;
-                unsigned int tag = threadIdx.x << ( (sizeof(unsigned int) << 3) - 5U);
+                unsigned int tag = hipThreadIdx_x << ( (sizeof(unsigned int) << 3) - 5U);
                 do
                 {
                     count = *address & TAG_MASK;
