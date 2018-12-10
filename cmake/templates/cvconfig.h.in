@@ -41,7 +41,7 @@
 #cmakedefine HAVE_COCOA
 
 /* NVIDIA CUDA Basic Linear Algebra Subprograms (BLAS) API*/
-#cmakedefine HAVE_CUBLAS
+#cmakedefine HAVE_HIPBLAS
 
 /* NVIDIA CUDA Runtime API*/
 #cmakedefine HAVE_HIP

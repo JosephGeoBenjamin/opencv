@@ -226,7 +226,7 @@ OCV_OPTION(WITH_CPUFEATURES    "Use cpufeatures Android library"             ON 
 OCV_OPTION(WITH_VTK            "Include VTK library support (and build opencv_viz module eiher)"             ON  IF (NOT ANDROID AND NOT IOS AND NOT WINRT AND NOT CMAKE_CROSSCOMPILING) )
 OCV_OPTION(WITH_HIP           "Include NVidia Cuda Runtime support"                                         OFF IF (NOT IOS AND NOT WINRT) )
 OCV_OPTION(WITH_CUFFT          "Include NVidia Cuda Fast Fourier Transform (FFT) library support"            ON  IF (NOT IOS AND NOT WINRT) )
-OCV_OPTION(WITH_CUBLAS         "Include NVidia Cuda Basic Linear Algebra Subprograms (BLAS) library support" ON IF (NOT IOS AND NOT WINRT) )
+OCV_OPTION(WITH_HIPBLAS         "Include NVidia Cuda Basic Linear Algebra Subprograms (BLAS) library support" ON IF (NOT IOS AND NOT WINRT) )
 OCV_OPTION(WITH_NVCUVID        "Include NVidia Video Decoding library support"                               ON IF (NOT IOS AND NOT APPLE) )
 OCV_OPTION(WITH_EIGEN          "Include Eigen2/Eigen3 support"               (NOT CV_DISABLE_OPTIMIZATION)       IF (NOT WINRT AND NOT CMAKE_CROSSCOMPILING) )
 OCV_OPTION(WITH_FFMPEG         "Include FFMPEG support"                      ON   IF (NOT ANDROID AND NOT IOS AND NOT WINRT) )
@@ -778,8 +778,8 @@ unset(_hal_includes)
 # ----------------------------------------------------------------------------
 if(HAVE_HIP)
   set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
-  if(HAVE_CUBLAS)
-    set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_cublas_LIBRARY})
+  if(HAVE_HIPBLAS)
+    set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${HIP_hipblas_LIBRARY})
   endif()
   if(HAVE_CUFFT)
     set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_cufft_LIBRARY})
@@ -1433,7 +1433,7 @@ endforeach()
 if(WITH_HIP OR HAVE_HIP)
   ocv_build_features_string(cuda_features
     IF HAVE_CUFFT THEN "CUFFT"
-    IF HAVE_CUBLAS THEN "CUBLAS"
+    IF HAVE_HIPBLAS THEN "HIPBLAS"
     IF HAVE_NVCUVID THEN "NVCUVID"
     IF CUDA_FAST_MATH THEN "FAST_MATH"
     ELSE "no extra features")

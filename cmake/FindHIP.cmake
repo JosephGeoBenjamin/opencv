@@ -392,7 +392,7 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     # ones specified to cmake directly.
     set(HIP_HIPCC_INCLUDE_ARGS ${HIP_HIPCC_INCLUDE_ARGS_USER})
 
-    # Add the include directories
+    # Add the include directories # HIP_TODO: Enable auto detect
     #set(include_directories_generator "$<TARGET_PROPERTY:${_target},INCLUDE_DIRECTORIES>")
     #list(APPEND HIP_HIPCC_INCLUDE_ARGS "$<$<BOOL:${include_directories_generator}>:-I$<JOIN:${include_directories_generator}, -I>>")
 
@@ -409,7 +409,7 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     HIP_PARSE_HIPCC_OPTIONS(HIP_HCC_FLAGS ${_hcc_options})
     HIP_PARSE_HIPCC_OPTIONS(HIP_NVCC_FLAGS ${_nvcc_options})
 
-    # Add the compile definitions
+    # Add the compile definitions # HIP_TODO: Enable auto detect
     #set(compile_definition_generator "$<TARGET_PROPERTY:${_target},COMPILE_DEFINITIONS>")
     #list(APPEND HIP_HIPCC_FLAGS "$<$<BOOL:${compile_definition_generator}>:-D$<JOIN:${compile_definition_generator}, -D>>")
 

@@ -19,7 +19,7 @@ class StaticHelper {
             loadLibrary("nppi");
             loadLibrary("npps");
             loadLibrary("cufft");
-            loadLibrary("cublas");
+            loadLibrary("HIPBLAS");
         }
 
         Log.d(TAG, "Trying to get library list");
