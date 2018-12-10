@@ -119,7 +119,7 @@
 #   -- Adds the cufft library to the target (can be any target).  Handles whether
 #      you are in emulation mode or not.
 #
-#   CUDA_ADD_CUBLAS_TO_TARGET( cuda_target )
+#   CUDA_ADD_HIPBLAS_TO_TARGET( cuda_target )
 #   -- Adds the cublas library to the target (can be any target).  Handles
 #      whether you are in emulation mode or not.
 #
@@ -520,8 +520,8 @@ macro(cuda_unset_include_and_libraries)
     unset(CUDA_CUDARTEMU_LIBRARY CACHE)
   endif()
   unset(CUDA_cupti_LIBRARY CACHE)
-  unset(CUDA_cublas_LIBRARY CACHE)
-  unset(CUDA_cublasemu_LIBRARY CACHE)
+  unset(HIP_hipblas_LIBRARY CACHE)
+  unset(HIP_hipblasemu_LIBRARY CACHE)
   unset(CUDA_cufft_LIBRARY CACHE)
   unset(CUDA_cufftemu_LIBRARY CACHE)
   unset(CUDA_curand_LIBRARY CACHE)
@@ -781,10 +781,10 @@ endif()
 if(CUDA_VERSION VERSION_LESS "3.1")
   # Emulation libraries aren't available in version 3.1 onward.
   find_cuda_helper_libs(cufftemu)
-  find_cuda_helper_libs(cublasemu)
+  find_cuda_helper_libs(hipblasemu)
 endif()
 find_cuda_helper_libs(cufft)
-find_cuda_helper_libs(cublas)
+find_cuda_helper_libs(hipblas)
 if(NOT CUDA_VERSION VERSION_LESS "3.2")
   # cusparse showed up in version 3.2
   find_cuda_helper_libs(cusparse)
@@ -822,10 +822,10 @@ endif()
 
 if (CUDA_BUILD_EMULATION)
   set(CUDA_CUFFT_LIBRARIES ${CUDA_cufftemu_LIBRARY})
-  set(CUDA_CUBLAS_LIBRARIES ${CUDA_cublasemu_LIBRARY})
+  set(CUDA_HIPBLAS_LIBRARIES ${CUDA_hipblasemu_LIBRARY})
 else()
   set(CUDA_CUFFT_LIBRARIES ${CUDA_cufft_LIBRARY})
-  set(CUDA_CUBLAS_LIBRARIES ${CUDA_cublas_LIBRARY})
+  set(CUDA_HIPBLAS_LIBRARIES ${HIP_hipblas_LIBRARY})
 endif()
 
 ########################
@@ -1707,14 +1707,14 @@ endmacro()
 
 ###############################################################################
 ###############################################################################
-# CUDA ADD CUBLAS TO TARGET
+# CUDA ADD HIPBLAS TO TARGET
 ###############################################################################
 ###############################################################################
-macro(CUDA_ADD_CUBLAS_TO_TARGET target)
+macro(CUDA_ADD_HIPBLAS_TO_TARGET target)
   if (CUDA_BUILD_EMULATION)
-    target_link_libraries(${target} LINK_PRIVATE ${CUDA_cublasemu_LIBRARY})
+    target_link_libraries(${target} LINK_PRIVATE ${CUDA_hipblasemu_LIBRARY})
   else()
-    target_link_libraries(${target} LINK_PRIVATE ${CUDA_cublas_LIBRARY})
+    target_link_libraries(${target} LINK_PRIVATE ${HIP_hipblas_LIBRARY})
   endif()
 endmacro()
 
