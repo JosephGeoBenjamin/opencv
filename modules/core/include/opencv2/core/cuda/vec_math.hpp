@@ -108,6 +108,7 @@ template<typename T> static __device__ __forceinline__ T saturate_cast(const int
 template<typename T> static __device__ __forceinline__ T saturate_cast(const float1& v) {return vec_math_detail::saturate_cast_helper<T>(v);}
 template<typename T> static __device__ __forceinline__ T saturate_cast(const double1& v) {return vec_math_detail::saturate_cast_helper<T>(v);}
 
+
 template<typename T> static __device__ __forceinline__ T saturate_cast(const uchar2& v) {return vec_math_detail::saturate_cast_helper<T>(v);}
 template<typename T> static __device__ __forceinline__ T saturate_cast(const char2& v) {return vec_math_detail::saturate_cast_helper<T>(v);}
 template<typename T> static __device__ __forceinline__ T saturate_cast(const ushort2& v) {return vec_math_detail::saturate_cast_helper<T>(v);}
@@ -161,6 +162,7 @@ CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(-, int, int)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(-, float, float)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(-, double, double)
 
+#ifdef __HIP_PLATFORM_NVCC__
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, uchar, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, char, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, ushort, uchar)
@@ -169,6 +171,7 @@ CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, int, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, uint, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, float, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(!, double, uchar)
+#endif // __HIP_PLATFORM_NVCC__
 
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(~, uchar, uchar)
 CV_CUDEV_IMPLEMENT_VEC_UNARY_OP(~, char, char)
