@@ -66,8 +66,9 @@ namespace cv { namespace cuda { namespace device
             unsigned int ret =0;
 #ifdef __HIP_PLATFORM_NVCC__
             asm("mov.u32 %0, %%laneid;" : "=r"(ret) );
-#else
-             //HIP_TODO
+#elif defined(__HIP_PLATFORM_HCC__)
+            int Tid = hipBlockIdx_x * hipBlockDim_x * hipBlockDim_y + hipThreadIdx_y * hipBlockDim_x + hipThreadIdx_x;
+            ret =  Tid % 32;
 #endif
             return ret;
         }
