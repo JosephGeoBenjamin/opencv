@@ -115,8 +115,8 @@
 #
 # The script creates the following macros (in alphebetical order)::
 #
-#   CUDA_ADD_CUFFT_TO_TARGET( cuda_target )
-#   -- Adds the cufft library to the target (can be any target).  Handles whether
+#   CUDA_ADD_ROCFFT_TO_TARGET( cuda_target )
+#   -- Adds the rocfft library to the target (can be any target).  Handles whether
 #      you are in emulation mode or not.
 #
 #   CUDA_ADD_HIPBLAS_TO_TARGET( cuda_target )
@@ -267,9 +267,9 @@
 #   CUDA_INCLUDE_DIRS     -- Include directory for cuda headers.  Added automatically
 #                            for CUDA_ADD_EXECUTABLE and CUDA_ADD_LIBRARY.
 #   CUDA_LIBRARIES        -- Cuda RT library.
-#   CUDA_CUFFT_LIBRARIES  -- Device or emulation library for the Cuda FFT
+#   CUDA_ROCFFT_LIBRARIES  -- Device or emulation library for the Cuda FFT
 #                            implementation (alternative to:
-#                            CUDA_ADD_CUFFT_TO_TARGET macro)
+#                            CUDA_ADD_ROCFFT_TO_TARGET macro)
 #   CUDA_CUBLAS_LIBRARIES -- Device or emulation library for the Cuda BLAS
 #                            implementation (alternative to:
 #                            CUDA_ADD_CUBLAS_TO_TARGET macro).
@@ -522,8 +522,8 @@ macro(cuda_unset_include_and_libraries)
   unset(CUDA_cupti_LIBRARY CACHE)
   unset(HIP_hipblas_LIBRARY CACHE)
   unset(HIP_hipblasemu_LIBRARY CACHE)
-  unset(CUDA_cufft_LIBRARY CACHE)
-  unset(CUDA_cufftemu_LIBRARY CACHE)
+  unset(CUDA_rocfft_LIBRARY CACHE)
+  unset(CUDA_rocfftemu_LIBRARY CACHE)
   unset(CUDA_curand_LIBRARY CACHE)
   unset(CUDA_cusparse_LIBRARY CACHE)
   unset(CUDA_npp_LIBRARY CACHE)
@@ -780,10 +780,10 @@ endif()
 # Search for additional CUDA toolkit libraries.
 if(CUDA_VERSION VERSION_LESS "3.1")
   # Emulation libraries aren't available in version 3.1 onward.
-  find_cuda_helper_libs(cufftemu)
+  find_cuda_helper_libs(rocfftemu)
   find_cuda_helper_libs(hipblasemu)
 endif()
-find_cuda_helper_libs(cufft)
+find_cuda_helper_libs(rocfft)
 find_cuda_helper_libs(hipblas)
 if(NOT CUDA_VERSION VERSION_LESS "3.2")
   # cusparse showed up in version 3.2
@@ -821,10 +821,10 @@ elseif(NOT CUDA_VERSION VERSION_LESS "4.0")
 endif()
 
 if (CUDA_BUILD_EMULATION)
-  set(CUDA_CUFFT_LIBRARIES ${CUDA_cufftemu_LIBRARY})
+  set(CUDA_ROCFFT_LIBRARIES ${CUDA_rocfftemu_LIBRARY})
   set(CUDA_HIPBLAS_LIBRARIES ${CUDA_hipblasemu_LIBRARY})
 else()
-  set(CUDA_CUFFT_LIBRARIES ${CUDA_cufft_LIBRARY})
+  set(CUDA_ROCFFT_LIBRARIES ${CUDA_rocfft_LIBRARY})
   set(CUDA_HIPBLAS_LIBRARIES ${HIP_hipblas_LIBRARY})
 endif()
 
@@ -1643,7 +1643,7 @@ endmacro()
 ###############################################################################
 ###############################################################################
 macro(cuda_compile_base cuda_target format generated_files)
-  
+
   MESSAGE(WARNING "${cuda_compile}")
   # Separate the sources from the options
   CUDA_GET_SOURCES_AND_OPTIONS(_sources _cmake_options _options ${ARGN})
@@ -1694,14 +1694,14 @@ endmacro()
 
 ###############################################################################
 ###############################################################################
-# CUDA ADD CUFFT TO TARGET
+# CUDA ADD ROCFFT TO TARGET
 ###############################################################################
 ###############################################################################
-macro(CUDA_ADD_CUFFT_TO_TARGET target)
+macro(CUDA_ADD_ROCFFT_TO_TARGET target)
   if (CUDA_BUILD_EMULATION)
-    target_link_libraries(${target} LINK_PRIVATE ${CUDA_cufftemu_LIBRARY})
+    target_link_libraries(${target} LINK_PRIVATE ${CUDA_rocfftemu_LIBRARY})
   else()
-    target_link_libraries(${target} LINK_PRIVATE ${CUDA_cufft_LIBRARY})
+    target_link_libraries(${target} LINK_PRIVATE ${CUDA_rocfft_LIBRARY})
   endif()
 endmacro()
 
