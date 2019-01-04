@@ -120,7 +120,7 @@
 #      you are in emulation mode or not.
 #
 #   CUDA_ADD_HIPBLAS_TO_TARGET( cuda_target )
-#   -- Adds the cublas library to the target (can be any target).  Handles
+#   -- Adds the hipblas library to the target (can be any target).  Handles
 #      whether you are in emulation mode or not.
 #
 #   CUDA_ADD_EXECUTABLE( cuda_target file0 file1 ...
@@ -270,9 +270,9 @@
 #   CUDA_ROCFFT_LIBRARIES  -- Device or emulation library for the Cuda FFT
 #                            implementation (alternative to:
 #                            CUDA_ADD_ROCFFT_TO_TARGET macro)
-#   CUDA_CUBLAS_LIBRARIES -- Device or emulation library for the Cuda BLAS
+#   CUDA_HIPBLAS_LIBRARIES -- Device or emulation library for the Cuda BLAS
 #                            implementation (alternative to:
-#                            CUDA_ADD_CUBLAS_TO_TARGET macro).
+#                            CUDA_ADD_HIPBLAS_TO_TARGET macro).
 #   CUDA_cupti_LIBRARY    -- CUDA Profiling Tools Interface library.
 #                            Only available for CUDA version 4.0+.
 #   CUDA_curand_LIBRARY   -- CUDA Random Number Generation library.
