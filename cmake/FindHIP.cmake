@@ -284,6 +284,9 @@ endmacro()
 ###############################################################################
 # MACRO: Add include directories to pass to the hipcc command
 ###############################################################################
+
+set(HIP_INCLUDE_DIRECTORIES "/opt/rocm/rocfft/include" "/opt/rocm/hipblas/include")
+
 set(HIP_HIPCC_INCLUDE_ARGS_USER "")
 macro(HIP_INCLUDE_DIRECTORIES)
     foreach(dir ${ARGN})
@@ -591,7 +594,7 @@ macro(hip_compile_base hip_target format generated_files)
   if(_source_files)
      list(REMOVE_ITEM _sources ${_source_files})
   endif()
- 
+
   set( ${generated_files} ${_generated_files})
 
 endmacro()
