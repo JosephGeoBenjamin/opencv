@@ -62,8 +62,8 @@ namespace cv { namespace cuda { namespace device
         virtual __device__ __host__ uchar* allocate(size_t numBytes) = 0;
         virtual __device__ __host__ void deallocate(uchar* ptr, size_t numBytes) = 0;
 #elif defined (__HIP_PLATFORM_HCC__)
-        __host__ uchar* allocate(size_t numBytes);
-         __host__ void deallocate(uchar* ptr, size_t numBytes);
+        __host__ __device__ uchar* allocate(size_t numBytes);
+        __host__ __device__ void deallocate(uchar* ptr, size_t numBytes);
 #endif
         static ThrustAllocator& getAllocator();
         static void setAllocator(ThrustAllocator* allocator);
