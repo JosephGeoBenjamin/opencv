@@ -188,7 +188,7 @@ if(HIP_FOUND)
       set(OPENCV_CUDA_ARCH_FEATURES "${OPENCV_CUDA_ARCH_FEATURES} ${ARCH}")
     endif()
   endforeach()
-  set(NVCC_FLAGS_EXTRA ${NVCC_FLAGS_EXTRA} -D_FORCE_INLINES)
+  set(NVCC_FLAGS_EXTRA ${NVCC_FLAGS_EXTRA} -D_FORCE_INLINES -std=c++11)
 
   # Tell NVCC to add PTX intermediate code for the specified architectures
   string(REGEX MATCHALL "[0-9]+" ARCH_LIST "${ARCH_PTX_NO_POINTS}")
@@ -321,7 +321,7 @@ endif()
 if(HAVE_HIP)
 
   IF(${HIP_PLATFORM} MATCHES "nvcc")
-    set(CUDA_LIBS_PATH "/usr/local/cuda/lib64/")
+    set(CUDA_LIBS_PATH "/usr/local/cuda/lib64/""/opt/rocm/hipblas/lib" "/opt/rocm/rocfft/lib")
     set(CUDA_LIBRARIES "cudart" "cuda" "hipblas" "rocfft" )
   ELSEIF(${HIP_PLATFORM} MATCHES "hcc")
     set(CUDA_LIBS_PATH "${HIP_PATH}/lib" "/opt/rocm/hipblas/lib" "/opt/rocm/rocfft/lib")
