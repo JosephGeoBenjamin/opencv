@@ -62,8 +62,8 @@ namespace cv { namespace cuda { namespace device
         virtual __device__ __host__ uchar* allocate(size_t numBytes) = 0;
         virtual __device__ __host__ void deallocate(uchar* ptr, size_t numBytes) = 0;
 #elif defined (__HIP_PLATFORM_HCC__)
-        __host__ uchar* allocate(size_t numBytes);
-         __host__ void deallocate(uchar* ptr, size_t numBytes);
+        __host__ __device__ uchar* allocate(size_t numBytes);
+        __host__ __device__ void deallocate(uchar* ptr, size_t numBytes);
 #endif
         static ThrustAllocator& getAllocator();
         static void setAllocator(ThrustAllocator* allocator);
@@ -120,7 +120,7 @@ namespace cv { namespace cuda { namespace device
         explicit __host__ __device__ __forceinline__ MaskCollection(PtrStepb* maskCollection_)
             : maskCollection(maskCollection_) {}
 
-        __device__ __forceinline__ MaskCollection(const MaskCollection& masks_)
+        __host__ __device__ __forceinline__ MaskCollection(const MaskCollection& masks_)
             : maskCollection(masks_.maskCollection), curMask(masks_.curMask){}
 
         __device__ __forceinline__ void next()
@@ -135,11 +135,7 @@ namespace cv { namespace cuda { namespace device
         __device__ __forceinline__ bool operator()(int y, int x) const
         {
             uchar val;
-#ifdef __HIP_PLATFORM_NVCC__
             return curMask.data == 0 || (ForceGlob<uchar>::Load(curMask.ptr(y), x, val), (val != 0));
-#elif defined __HIP_PLATFORM_HCC__
-            return curMask.data == 0; // HIP_TODO : Need to fix implicit instantiation of undefined template caused by adding (|| ForceFlob<>*)
-#endif
         }
 
         const PtrStepb* maskCollection;

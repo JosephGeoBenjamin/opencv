@@ -41,13 +41,13 @@
 #cmakedefine HAVE_COCOA
 
 /* NVIDIA CUDA Basic Linear Algebra Subprograms (BLAS) API*/
-#cmakedefine HAVE_CUBLAS
+#cmakedefine HAVE_HIPBLAS
 
 /* NVIDIA CUDA Runtime API*/
 #cmakedefine HAVE_HIP
 
 /* NVIDIA CUDA Fast Fourier Transform (FFT) API*/
-#cmakedefine HAVE_CUFFT
+#cmakedefine HAVE_ROCFFT
 
 /* IEEE1394 capturing support */
 #cmakedefine HAVE_DC1394
