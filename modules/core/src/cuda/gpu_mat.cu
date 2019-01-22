@@ -64,8 +64,7 @@ namespace
     class DefaultThrustAllocator: public cv::cuda::device::ThrustAllocator
     {
     public:
-#ifdef __HIP_PLATFORM_NVCC__
-        __device__ __host__ uchar* allocate(size_t numBytes) CV_OVERRIDE
+        __host__ uchar* allocate(size_t numBytes) CV_OVERRIDE
         {
 #ifndef __HIP_DEVICE_COMPILE__
             uchar* ptr;
@@ -75,7 +74,7 @@ namespace
             return NULL;
 #endif
         }
-        __device__ __host__ void deallocate(uchar* ptr, size_t numBytes) CV_OVERRIDE
+         __host__ void deallocate(uchar* ptr, size_t numBytes) CV_OVERRIDE 
         {
             CV_UNUSED(numBytes);
 #ifndef __HIP_DEVICE_COMPILE__
@@ -83,34 +82,11 @@ namespace
 #endif
         }
 
-#endif //__HIP_PLATFORM_
     };
     DefaultThrustAllocator defaultThrustAllocator;
     cv::cuda::device::ThrustAllocator* g_thrustAllocator = &defaultThrustAllocator;
 }
 
-#ifdef __HIP_PLATFORM_HCC__
-// HIP_TODO: Check significance of commented lines
-__host__ __device__ void cv::cuda::device::ThrustAllocator::deallocate(unsigned char* ptr, unsigned long numBytes)
-{
-    CV_UNUSED(numBytes);
-#ifndef __HIP_DEVICE_COMPILE__
-    CV_CUDEV_SAFE_CALL(hipFree(ptr));
-#endif
-}
-
-__host__ __device__ uchar* cv::cuda::device::ThrustAllocator::allocate(unsigned long numBytes)
-{
-#ifndef __HIP_DEVICE_COMPILE__
-    uchar* ptr;
-    CV_CUDEV_SAFE_CALL(hipMalloc(&ptr, numBytes));
-    return ptr;
-#else
-    return NULL;
-#endif
-}
-
-#endif //__HIP_PLATFORM_
 
 
 
@@ -138,10 +114,9 @@ namespace
 
     bool DefaultAllocator::allocate(GpuMat* mat, int rows, int cols, size_t elemSize)
     {
-#ifdef __HIP_PLATFORM_NVCC__
         if (rows > 1 && cols > 1)
         {
-            CV_CUDEV_SAFE_CALL( hipMallocPitch(&mat->data, &mat->step, elemSize * cols, rows) );
+            CV_CUDEV_SAFE_CALL( hipMallocPitch((void**)&mat->data, &mat->step, elemSize * cols, rows) );
         }
         else
         {
@@ -149,11 +124,6 @@ namespace
             CV_CUDEV_SAFE_CALL( hipMalloc(&mat->data, elemSize * cols * rows) );
             mat->step = elemSize * cols;
         }
-#elif defined __HIP_PLATFORM_HCC__
-      // Single row or single column must be continuous
-        CV_CUDEV_SAFE_CALL( hipMalloc(&mat->data, elemSize * cols * rows) );
-        mat->step = elemSize * cols;
-#endif
 
         mat->refcount = (int*) fastMalloc(sizeof(int));
 
