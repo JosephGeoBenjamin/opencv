@@ -141,7 +141,7 @@ namespace
 #ifdef __HIP_PLATFORM_NVCC__
         if (rows > 1 && cols > 1)
         {
-            CV_CUDEV_SAFE_CALL( hipMallocPitch(&mat->data, &mat->step, elemSize * cols, rows) );
+            CV_CUDEV_SAFE_CALL( hipMallocPitch((void**)&mat->data, &mat->step, elemSize * cols, rows) );
         }
         else
         {
