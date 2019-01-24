@@ -484,8 +484,10 @@ void cv::cuda::Stream::waitEvent(const Event& event)
 #endif
 }
 
-#if defined(HAVE_HIP) && (CUDART_VERSION >= 5000)
+//HIP_TODO: Nvidia
+//#if defined(HAVE_HIP) && (CUDART_VERSION >= 5000)
 
+#if defined(HAVE_HIP)
 namespace
 {
     struct CallbackData
@@ -496,7 +498,7 @@ namespace
         CallbackData(Stream::StreamCallback callback_, void* userData_) : callback(callback_), userData(userData_) {}
     };
 
-    void CUDART_CB hipStreamCallback(hipStream_t, hipError_t status, void* userData)
+    void hipStreamCallback(hipStream_t, hipError_t status, void* userData)
     {
         CallbackData* data = reinterpret_cast<CallbackData*>(userData);
         data->callback(static_cast<int>(status), data->userData);
@@ -513,7 +515,9 @@ void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userDa
     CV_UNUSED(userData);
     throw_no_cuda();
 #else
-    #if CUDART_VERSION < 5000
+    //HIP_TODO: Nvidia
+    //#if CUDART_VERSION < 5000
+    #if 0
         CV_UNUSED(callback);
         CV_UNUSED(userData);
         CV_Error(cv::Error::StsNotImplemented, "This function requires CUDA >= 5.0");
