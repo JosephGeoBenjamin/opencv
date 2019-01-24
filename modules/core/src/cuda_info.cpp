@@ -100,7 +100,9 @@ bool cv::cuda::deviceSupports(FeatureSet feature_set)
 #ifndef HAVE_HIP
     CV_UNUSED(feature_set);
     throw_no_cuda();
-#else
+#else.
+
+#ifdef __HIP_PLATFORM_NVCC__
     static int versions[] =
     {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
@@ -124,6 +126,12 @@ bool cv::cuda::deviceSupports(FeatureSet feature_set)
     }
 
     return TargetArchs::builtWith(feature_set) && (version >= feature_set);
+#elif defined (__HIP_PLATFORM_HCC__)
+	//HIP_TODO: Modify in all places of deviceSupport calls to check for device
+    //          and set appropriate conditions in AMD-HIP devices, instead of hardset `true`
+    return true;
+#endif //Platform Deduce
+
 #endif
 }
 
@@ -1255,7 +1263,7 @@ namespace
     };
 
 #elif defined (__HIP_PLATFORM_NVCC__)
-   
+
     const ErrorEntry cu_errors [] =
     {
         error_entry( HIP_SUCCESS                              ),
