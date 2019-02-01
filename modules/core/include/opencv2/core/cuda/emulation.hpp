@@ -71,7 +71,8 @@ namespace cv { namespace cuda { namespace device
         template<int CTA_SIZE>
         static __forceinline__ __device__ int Ballot(int predicate)
         {
-#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ >= 200)
+//#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ >= 200)
+#if defined __HIP_ARCH_HAS_WARP_BALLOT__
             return __ballot(predicate);
 #else
             __shared__ volatile int cta_buffer[CTA_SIZE];
@@ -153,7 +154,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ float atomicAdd(float* address, float val)
             {
-            #if __CUDA_ARCH__ >= 200
+            //#if __CUDA_ARCH__ >= 200
+            #if defined __HIP_ARCH_HAS_GLOBAL_INT64_ATOMICS__
                 return ::atomicAdd(address, val);
             #else
                 int* address_as_i = (int*) address;
@@ -168,7 +170,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ double atomicAdd(double* address, double val)
             {
-            #if __CUDA_ARCH__ >= 130
+            //#if __CUDA_ARCH__ >= 130
+            #if defined __HIP_ARCH_HAS_DOUBLES__
                 unsigned long long int* address_as_ull = (unsigned long long int*) address;
                 unsigned long long int old = *address_as_ull, assumed;
                 do {
@@ -190,7 +193,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ float atomicMin(float* address, float val)
             {
-            #if __CUDA_ARCH__ >= 120
+            //#if __CUDA_ARCH__ >= 120
+            #if defined __HIP_ARCH_HAS_SHARED_FLOAT_ATOMIC_EXCH__
                 int* address_as_i = (int*) address;
                 int old = *address_as_i, assumed;
                 do {
@@ -207,7 +211,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ double atomicMin(double* address, double val)
             {
-            #if __CUDA_ARCH__ >= 130
+            //#if __CUDA_ARCH__ >= 130
+            #if defined __HIP_ARCH_HAS_DOUBLES__
                 unsigned long long int* address_as_ull = (unsigned long long int*) address;
                 unsigned long long int old = *address_as_ull, assumed;
                 do {
@@ -229,7 +234,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ float atomicMax(float* address, float val)
             {
-            #if __CUDA_ARCH__ >= 120
+            //#if __CUDA_ARCH__ >= 120
+            #if defined __HIP_ARCH_HAS_SHARED_FLOAT_ATOMIC_EXCH__
                 int* address_as_i = (int*) address;
                 int old = *address_as_i, assumed;
                 do {
@@ -246,7 +252,8 @@ namespace cv { namespace cuda { namespace device
             }
             static __device__ __forceinline__ double atomicMax(double* address, double val)
             {
-            #if __CUDA_ARCH__ >= 130
+            //#if __CUDA_ARCH__ >= 130
+            #if defined __HIP_ARCH_HAS_DOUBLES__
                 unsigned long long int* address_as_ull = (unsigned long long int*) address;
                 unsigned long long int old = *address_as_ull, assumed;
                 do {

@@ -179,7 +179,8 @@ namespace cv { namespace cuda { namespace device
     template <typename T>
     __device__ T warpScanInclusive(T idata, volatile T* s_Data, unsigned int tid)
     {
-    #if __CUDA_ARCH__ >= 300
+    //#if __CUDA_ARCH__ >= 300
+    #if __HIP_ARCH_HAS_WARP_SHUFFLE__
         const unsigned int laneId = cv::cuda::device::Warp::laneId();
 
         // scan on shuffl functions

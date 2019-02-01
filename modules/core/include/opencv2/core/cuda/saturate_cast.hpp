@@ -44,7 +44,7 @@
 #define OPENCV_CUDA_SATURATE_CAST_HPP
 
 #include "common.hpp"
-
+#include <iostream>
 /** @file
  * @deprecated Use @ref cudev instead.
  */
@@ -242,18 +242,6 @@ namespace cv { namespace cuda { namespace device
         asm("cvt.sat.s32.u32 %0, %1;" : "=r"(res) : "r"(v));
         return res;
     }
-    template<> __device__ __forceinline__ int saturate_cast<int>(float v)
-    {
-        return __float2int_rn(v);
-    }
-    template<> __device__ __forceinline__ int saturate_cast<int>(double v)
-    {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 130
-        return __double2int_rn(v);
-    #else
-        return saturate_cast<int>((float)v);
-    #endif
-    }
 
     template<> __device__ __forceinline__ uint saturate_cast<uint>(schar v)
     {
@@ -274,7 +262,21 @@ namespace cv { namespace cuda { namespace device
         asm("cvt.sat.u32.s32 %0, %1;" : "=r"(res) : "r"(v));
         return res;
     }
-#endif
+#endif // _Platform_deduction
+
+    template<> __device__ __forceinline__ int saturate_cast<int>(float v)
+    {
+        return __float2int_rn(v);
+    }
+    template<> __device__ __forceinline__ int saturate_cast<int>(double v)
+    {
+    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 130
+        return __double2int_rn(v);
+    #else
+        return saturate_cast<int>((float)v);
+    #endif
+    }
+
     template<> __device__ __forceinline__ uint saturate_cast<uint>(float v)
     {
         return __float2uint_rn(v);
