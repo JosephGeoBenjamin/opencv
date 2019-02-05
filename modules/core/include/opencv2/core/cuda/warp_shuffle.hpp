@@ -51,11 +51,15 @@
 
 namespace cv { namespace cuda { namespace device
 {
-#if __HIPCC__
+
+#ifdef __HIP_PLATFORM_NVCC__
+
 #  define __shfl(x, y, z) __shfl_sync(0xFFFFFFFFU, x, y, z)
 #  define __shfl_up(x, y, z) __shfl_up_sync(0xFFFFFFFFU, x, y, z)
 #  define __shfl_down(x, y, z) __shfl_down_sync(0xFFFFFFFFU, x, y, z)
-#endif
+
+#elif defined (__HIP_PLATFORM_HCC__)
+// HIP_NOTE:uses default shuffle call in HCC
     template <typename T>
     __device__ __forceinline__ T shfl(T val, int srcLane, int width = warpSize)
     {
