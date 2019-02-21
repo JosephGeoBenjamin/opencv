@@ -164,6 +164,9 @@ namespace cv { namespace cuda { namespace device
         return 0.0;
     #endif
     }
+
+#endif //Platform Deduce
+
 }}}
 
 #  undef __shfl
