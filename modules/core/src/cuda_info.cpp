@@ -1035,6 +1035,7 @@ namespace
         bool operator()(const ErrorEntry& e) const { return e.code == code; }
     };
 
+#ifdef NPP_ENABLE
     const ErrorEntry npp_errors [] =
     {
     #if defined (_MSC_VER)
@@ -1124,6 +1125,7 @@ namespace
     };
 
     const size_t npp_error_num = sizeof(npp_errors) / sizeof(npp_errors[0]);
+#endif //NPP_ENABLE
 
     const ErrorEntry cu_errors [] =
     {
@@ -1191,6 +1193,7 @@ namespace
 
 #endif
 
+#ifdef NPP_ENABLE
 String cv::cuda::getNppErrorMessage(int code)
 {
 #ifndef HAVE_CUDA
@@ -1200,6 +1203,7 @@ String cv::cuda::getNppErrorMessage(int code)
     return getErrorString(code, npp_errors, npp_error_num);
 #endif
 }
+#endif //NPP_ENABLE
 
 String cv::cuda::getCudaDriverApiErrorMessage(int code)
 {

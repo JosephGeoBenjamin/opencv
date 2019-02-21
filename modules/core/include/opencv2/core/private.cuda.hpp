@@ -88,7 +88,10 @@
 //! @cond IGNORED
 
 namespace cv { namespace cuda {
+#ifdef NPP_ENABLE    
     CV_EXPORTS cv::String getNppErrorMessage(int code);
+#endif //NPP_ENABLE
+
     CV_EXPORTS cv::String getCudaDriverApiErrorMessage(int code);
 
     CV_EXPORTS GpuMat getInputMat(InputArray _src, Stream& stream);
@@ -108,12 +111,15 @@ static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::GpuNotSuppo
 
 #else // HAVE_CUDA
 
+#ifdef NPP_ENABLE
 #define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { cudaStreamSynchronize(oldStream); nppSetStream(newStream); } }
+#endif //NPP_ENABLE
 
 static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::StsNotImplemented, "The called functionality is disabled for current build or platform"); }
 
 namespace cv { namespace cuda
 {
+#ifdef NPP_ENABLE
     static inline void checkNppError(int code, const char* file, const int line, const char* func)
     {
         if (code < 0)
@@ -158,9 +164,13 @@ namespace cv { namespace cuda
     private:
         cudaStream_t oldStream;
     };
+#endif //NPP_ENABLE
+
 }}
 
+#ifdef NPP_ENABLE
 #define nppSafeCall(expr)  cv::cuda::checkNppError(expr, __FILE__, __LINE__, CV_Func)
+#endif //NPP_ENABLE
 #define cuSafeCall(expr)  cv::cuda::checkCudaDriverApiError(expr, __FILE__, __LINE__, CV_Func)
 
 #endif // HAVE_CUDA
