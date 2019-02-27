@@ -401,7 +401,9 @@ namespace cv { namespace cuda { namespace device
             template <class KP, class KR, class VP, class VR, class Cmp>
             static __device__ void reduce(KP skeys, KR key, VP svals, VR val, unsigned int tid, Cmp cmp)
             {
-            #if 0 // __CUDA_ARCH__ >= 300
+            //HIP_NOTE:
+            //#if __CUDA_ARCH__ >= 300
+            #ifdef __HIP_ARCH_HAS_WARP_SHUFFLE__
                 CV_UNUSED(skeys);
                 CV_UNUSED(svals);
                 CV_UNUSED(tid);
@@ -426,7 +428,9 @@ namespace cv { namespace cuda { namespace device
             {
                 const unsigned int laneId = Warp::laneId();
 
-            #if 0 // __CUDA_ARCH__ >= 300
+            //HIP_NOTE:
+            //#if __CUDA_ARCH__ >= 300
+            #ifdef __HIP_ARCH_HAS_WARP_SHUFFLE__
                 Unroll<16, KP, KR, VP, VR, Cmp>::loopShfl(key, val, cmp, warpSize);
 
                 if (laneId == 0)
@@ -456,7 +460,9 @@ namespace cv { namespace cuda { namespace device
 
                 if (tid < 32)
                 {
-                #if 0 // __CUDA_ARCH__ >= 300
+                //HIP_NOTE:
+                //#if __CUDA_ARCH__ >= 300
+                #ifdef __HIP_ARCH_HAS_WARP_SHUFFLE__
                     loadFromSmem(svals, val, tid);
 
                     Unroll<M / 2, KP, KR, VP, VR, Cmp>::loopShfl(key, val, cmp, M);

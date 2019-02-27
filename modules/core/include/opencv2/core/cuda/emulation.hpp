@@ -60,7 +60,9 @@ namespace cv { namespace cuda { namespace device
 
         static __device__ __forceinline__ int syncthreadsOr(int pred)
         {
-#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 200)
+//HIP_NOTE:
+//#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 200)
+#ifndef __HIP_ARCH_HAS_SYNC_THREAD_EXT__
                 // just campilation stab
                 return 0;
 #else
@@ -72,7 +74,7 @@ namespace cv { namespace cuda { namespace device
         static __forceinline__ __device__ int Ballot(int predicate)
         {
 //#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ >= 200)
-#if defined __HIP_ARCH_HAS_WARP_BALLOT__
+#ifdef __HIP_ARCH_HAS_WARP_BALLOT__
             return __ballot(predicate);
 #else
             __shared__ volatile int cta_buffer[CTA_SIZE];
@@ -90,7 +92,9 @@ namespace cv { namespace cuda { namespace device
             template<typename T>
             static __device__ __forceinline__ T atomicInc(T* address, T val)
             {
-#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+//HIP_NOTE:
+//#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+#ifdef __HIP_ARCH_HAS_SHARED_INT32_ATOMICS__
                 T count;
                 unsigned int tag = hipThreadIdx_x << ( (sizeof(unsigned int) << 3) - 5U);
                 do
@@ -109,7 +113,9 @@ namespace cv { namespace cuda { namespace device
             template<typename T>
             static __device__ __forceinline__ T atomicAdd(T* address, T val)
             {
-#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+//HIP_NOTE:
+//#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+#ifdef __HIP_ARCH_HAS_SHARED_INT32_ATOMICS__
                 T count;
                 unsigned int tag = hipThreadIdx_x << ( (sizeof(unsigned int) << 3) - 5U);
                 do
@@ -128,7 +134,9 @@ namespace cv { namespace cuda { namespace device
             template<typename T>
             static __device__ __forceinline__ T atomicMin(T* address, T val)
             {
-#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+//HIP_NOTE:
+//#if defined (__CUDA_ARCH__) && (__CUDA_ARCH__ < 120)
+#ifdef __HIP_ARCH_HAS_SHARED_INT32_ATOMICS__
                 T count = ::min(*address, val);
                 do
                 {
