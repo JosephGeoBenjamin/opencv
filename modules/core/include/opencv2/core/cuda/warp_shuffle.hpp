@@ -175,5 +175,4 @@ namespace cv { namespace cuda { namespace device
 
 //! @endcond
 
-#endif
 #endif // OPENCV_CUDA_WARP_SHUFFLE_HPP
