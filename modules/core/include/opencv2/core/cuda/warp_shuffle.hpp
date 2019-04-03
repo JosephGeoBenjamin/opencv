@@ -51,15 +51,20 @@
 
 namespace cv { namespace cuda { namespace device
 {
-#if __CUDACC_VER_MAJOR__ >= 9
+
+#ifdef __HIP_PLATFORM_NVCC__
+
 #  define __shfl(x, y, z) __shfl_sync(0xFFFFFFFFU, x, y, z)
 #  define __shfl_up(x, y, z) __shfl_up_sync(0xFFFFFFFFU, x, y, z)
 #  define __shfl_down(x, y, z) __shfl_down_sync(0xFFFFFFFFU, x, y, z)
-#endif
+
+#elif defined (__HIP_PLATFORM_HCC__)
+// HIP_NOTE:uses default shuffle call in HCC
     template <typename T>
     __device__ __forceinline__ T shfl(T val, int srcLane, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return __shfl(val, srcLane, width);
     #else
         return T();
@@ -67,7 +72,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ unsigned int shfl(unsigned int val, int srcLane, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return (unsigned int) __shfl((int) val, srcLane, width);
     #else
         return 0;
@@ -75,7 +81,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ double shfl(double val, int srcLane, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         int lo = __double2loint(val);
         int hi = __double2hiint(val);
 
@@ -91,7 +98,8 @@ namespace cv { namespace cuda { namespace device
     template <typename T>
     __device__ __forceinline__ T shfl_down(T val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return __shfl_down(val, delta, width);
     #else
         return T();
@@ -99,7 +107,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ unsigned int shfl_down(unsigned int val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return (unsigned int) __shfl_down((int) val, delta, width);
     #else
         return 0;
@@ -107,7 +116,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ double shfl_down(double val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         int lo = __double2loint(val);
         int hi = __double2hiint(val);
 
@@ -123,7 +133,8 @@ namespace cv { namespace cuda { namespace device
     template <typename T>
     __device__ __forceinline__ T shfl_up(T val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return __shfl_up(val, delta, width);
     #else
         return T();
@@ -131,7 +142,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ unsigned int shfl_up(unsigned int val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         return (unsigned int) __shfl_up((int) val, delta, width);
     #else
         return 0;
@@ -139,7 +151,8 @@ namespace cv { namespace cuda { namespace device
     }
     __device__ __forceinline__ double shfl_up(double val, unsigned int delta, int width = warpSize)
     {
-    #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    //#if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 300
+    #if defined __HIP_ARCH_HAS_WARP_SHUFFLE__
         int lo = __double2loint(val);
         int hi = __double2hiint(val);
 
@@ -151,6 +164,9 @@ namespace cv { namespace cuda { namespace device
         return 0.0;
     #endif
     }
+
+#endif //Platform Deduce
+
 }}}
 
 #  undef __shfl
