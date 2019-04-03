@@ -24,4 +24,3 @@ bin/
 build
 log
 *.prehip
-opencv_tester.sh
