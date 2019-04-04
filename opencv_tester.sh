@@ -12,7 +12,7 @@
 #-------------------------------------------------------------------------------
 
 # Export path to the testdata  in opencv_extra module, Which needed for ceratain tests
-export OPENCV_TEST_DATA_PATH=/home/mcw/jgeob/opencv-build-test/opencv_extra/testdata/
+export OPENCV_TEST_DATA_PATH=../opencv_extra/testdata/
 
 # uncomment modules to be run
 TEST_MODULE=(
