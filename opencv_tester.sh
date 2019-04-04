@@ -314,6 +314,7 @@ module_start()
 for module in ${TEST_MODULE[@]}; do
     eval TEST_LIST=('${'$module'[@]}')
     $(module_start)
+    ((TEST_NUM=0))
     for test in ${TEST_LIST[@]}; do
         ((TEST_NUM++))
         # Sudo creates seperate bash env thus regular `export` will not work
