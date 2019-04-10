@@ -377,8 +377,12 @@ namespace cv { namespace cuda { namespace device
 
                 const dim3 threads(ft::smart_block_dim_x, ft::smart_block_dim_y, 1);
                 const dim3 grid(divUp(src1.cols, threads.x * ft::smart_shift), divUp(src1.rows, threads.y), 1);
-
+#ifdef __HIP_PLATFORM_HCC__
                 hipLaunchKernelGGL(transformSmart<T1, T2, D, BinOp, Mask>, dim3(grid), dim3(threads), 0, stream, src1, src2, dst, mask, op);
+#elif defined (__HIP_PLATFORM_NVCC__)
+                transformSmart<T1, T2, D><<<grid, threads, 0, stream>>>(src1, src2, dst, mask, op);
+#endif //Platform Deduce
+
                 cudaSafeCall( hipGetLastError() );
 
                 if (stream == 0)
