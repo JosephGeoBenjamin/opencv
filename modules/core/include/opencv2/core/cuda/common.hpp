@@ -101,11 +101,15 @@ namespace cv { namespace cuda
 
 #ifdef __HIP_PLATFORM_NVCC__
             hipChannelFormatDesc desc = hipCreateChannelDesc (img.cols, img.rows, img.step,hipChannelFormatKindUnsigned);
-#elif defined (__HIP_PLATFORM_HCC__) 
+#elif defined (__HIP_PLATFORM_HCC__)
             hipChannelFormatDesc desc = hipCreateChannelDesc<T>();
 #endif //__HIP_PLATFORM
 
+
+#ifdef __HIP_PLATFORM_HCC__
             cudaSafeCall( hipBindTexture2D(0, const_cast<textureReference*>(tex), img.ptr(), &desc, img.cols, img.rows, img.step) );
+#endif //Platform Deduce
+
         }
     }
 }}

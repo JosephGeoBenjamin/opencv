@@ -520,6 +520,9 @@ endif()
 ocv_update(OPENCV_CONFIG_FILE_INCLUDE_DIR "${CMAKE_BINARY_DIR}/" CACHE PATH "Where to create the platform-dependant cvconfig.h")
 ocv_include_directories(${OPENCV_CONFIG_FILE_INCLUDE_DIR})
 
+if (DEFINED __HIP_PLATFORM_NVCC__)
+  ocv_include_directories("/usr/local/cuda/include")
+endif()
 # ----------------------------------------------------------------------------
 #  Path for additional modules
 # ----------------------------------------------------------------------------
